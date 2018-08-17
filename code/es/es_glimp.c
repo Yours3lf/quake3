@@ -40,6 +40,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../client/client.h"
 #include "../sys/sys_local.h"
 
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+static Display *x_display = NULL;
+
 typedef enum
 {
    RSERR_OK,
@@ -281,10 +285,10 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, Nati
       ri.Printf( PRINT_ALL, "SDL using driver \"%s\"\n", driverName );
       Cvar_Set( "r_sdlDriver", driverName );
 
-      if (!SDL_SetVideoMode(32, 32, 0, 0)) {
-         ri.Printf(PRINT_ALL, "SDL_SetVideoMode() failed (%s)\n", SDL_GetError());
-         return qfalse;
-      }
+      //if (!SDL_SetVideoMode(32, 32, 0, 0)) {
+      //   ri.Printf(PRINT_ALL, "SDL_SetVideoMode() failed (%s)\n", SDL_GetError());
+      //   return qfalse;
+      //}
    }
 #endif
 
@@ -298,7 +302,8 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, Nati
       ri.Printf(PRINT_ALL, "eglInitialize() failed\n");
       return qfalse;
    }
-   if (!eglSaneChooseConfigBRCM(g_EGLDisplay, s_configAttribs, &g_EGLConfig, 1, &numConfigs)) {
+   //if (!eglSaneChooseConfigBRCM(g_EGLDisplay, s_configAttribs, &g_EGLConfig, 1, &numConfigs)) {
+   if (!eglChooseConfig(g_EGLDisplay, s_configAttribs, &g_EGLConfig, 1, &numConfigs)) {
       ri.Printf(PRINT_ALL, "eglSaneChooseConfigBRCM() failed\n");
       return qfalse;
    }
@@ -439,6 +444,67 @@ static void GLimp_InitExtensions( void )
    textureFilterAnisotropic = qfalse;
 }
 
+EGLNativeWindowType createXWindow(unsigned width, unsigned height)
+{
+	Window root;
+	XSetWindowAttributes swa;
+	XSetWindowAttributes  xattr;
+	Atom wm_state;
+	XWMHints hints;
+	XEvent xev;
+	Window win;
+
+	/*
+	 * X11 native display initialization
+	 */
+
+	x_display = XOpenDisplay(NULL);
+	if ( x_display == NULL )
+	{
+		return EGL_FALSE;
+	}
+
+	root = DefaultRootWindow(x_display);
+
+	swa.event_mask  =  ExposureMask;
+	win = XCreateWindow(
+			   x_display, root,
+			   0, 0, width, height, 0,
+			   CopyFromParent, InputOutput,
+			   CopyFromParent, CWEventMask,
+			   &swa );
+
+	xattr.override_redirect = 0;
+	XChangeWindowAttributes ( x_display, win, CWOverrideRedirect, &xattr );
+
+	hints.input = 1;
+	hints.flags = InputHint;
+	XSetWMHints(x_display, win, &hints);
+
+	// make the window visible on the screen
+	XMapWindow (x_display, win);
+	XStoreName (x_display, win, "title");
+
+	// get identifiers for the provided atom name strings
+	wm_state = XInternAtom (x_display, "_NET_WM_STATE", 0);
+
+	memset ( &xev, 0, sizeof(xev) );
+	xev.type                 = ClientMessage;
+	xev.xclient.window       = win;
+	xev.xclient.message_type = wm_state;
+	xev.xclient.format       = 32;
+	xev.xclient.data.l[0]    = 1;
+	xev.xclient.data.l[1]    = 0;
+	XSendEvent (
+	   x_display,
+	   DefaultRootWindow ( x_display ),
+	   0,
+	   SubstructureNotifyMask,
+	   &xev );
+
+	return (EGLNativeWindowType) win;
+}
+
 /*
 ===============
 GLimp_Init
@@ -453,9 +519,11 @@ void GLimp_Init( void )
 
    Sys_GLimpInit( );
 
+	EGLNativeWindowType window = createXWindow(512, 512);
+
    // create the window and set up the context
    if( !GLimp_StartDriverAndSetMode( r_mode->integer, r_fullscreen->integer,
-      (NativeWindowType)ri.Cvar_Get("vc_wnd", "0", CVAR_LATCH)->integer))
+      (NativeWindowType)window))
    {
       success = qfalse;
    }

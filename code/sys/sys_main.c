@@ -526,7 +526,7 @@ main
 
 int main( int argc, char **argv )
 {
-   bcm_host_init();
+   //bcm_host_init();
    return mymain(argc, argv);
 }
 

@@ -300,7 +300,7 @@ void RB_ShadowFinish( void ) {
 
 	GL_Bind( tr.whiteImage );
 
-    qglLoadIdentity ();
+    //qglLoadIdentity ();
 
 #ifdef VCMODS_OPENGLES
 	qglColor4f( 0.6f, 0.6f, 0.6f, 1.0f );

@@ -848,13 +848,13 @@ void RB_StageIteratorSky( void ) {
 		qglColor3f( tr.identityLight, tr.identityLight, tr.identityLight );
 #endif
 
-		qglPushMatrix ();
+		//qglPushMatrix ();
 		GL_State( 0 );
 		qglTranslatef (backEnd.viewParms.or.origin[0], backEnd.viewParms.or.origin[1], backEnd.viewParms.or.origin[2]);
 
 		DrawSkyBox( tess.shader );
 
-		qglPopMatrix();
+		//qglPopMatrix();
 	}
 
 	// generate the vertexes for all the clouds, which will be drawn
