@@ -1200,6 +1200,7 @@ void RB_SurfaceAxis( void ) {
 	qglLineWidth( 3 );
 #ifdef VCMODS_OPENGLES
 	//qglEnableClientState( GL_COLOR_ARRAY );
+	qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
 	//qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, colors );
 	qglEnableVertexAttribArray(3);
 	qglVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, 0, 0, colors);

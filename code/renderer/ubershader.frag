@@ -17,6 +17,7 @@ uniform sampler2D tex1;
 uniform int use_multitexturing;
 uniform int multitexture_mode;
 uniform int alphatest_mode;
+uniform int use_vertex_color;
 
 varying vec2 texcoord0;
 varying vec2 texcoord1;
@@ -74,6 +75,11 @@ void main()
 		{
 			discard;
 		}
+	}
+	
+	if(bool(use_vertex_color))
+	{
+		result *= color/255.0;
 	}
 	
 	gl_FragColor = result;

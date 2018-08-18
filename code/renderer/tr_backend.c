@@ -770,6 +770,9 @@ void	RB_SetGL2D (void) {
 	// set 2D virtual screen size
 	qglViewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
 	qglScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+
+	//qglClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	//qglMatrixMode(GL_PROJECTION);
     //qglLoadIdentity ();
 	qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, identity);
@@ -1074,6 +1077,8 @@ const void	*RB_DrawBuffer( const void *data ) {
 	// clear screen for debugging
 	if ( r_clear->integer ) {
 		qglClearColor( 1, 0, 0.5, 1 );
+		//qglClearColor(0, 0, 0, 0);
+		qglClearDepth(1.0);
 		qglClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	}
 

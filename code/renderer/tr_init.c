@@ -1033,6 +1033,8 @@ int PROJECTION_LOC;
 int USE_MULTITEXTURING_LOC;
 int MULTITEXTURE_MODE_LOC;
 int ALPHATEST_MODE_LOC;
+int USE_VERTEX_COLOR_LOC;
+GLuint UBER_PROGRAM;
 
 void LoadUberShader()
 {
@@ -1060,24 +1062,26 @@ void LoadUberShader()
 		frag_shader[size] = '\0';
 	}
 
-	GLuint program = qglCreateProgram();
+	UBER_PROGRAM = qglCreateProgram();
 	GLuint vertex_shader = qglCreateShader(GL_VERTEX_SHADER);
 	GLuint fragment_shader = qglCreateShader(GL_FRAGMENT_SHADER);
 	qglShaderSource(vertex_shader, 1, &vert_shader, 0);
 	qglShaderSource(fragment_shader, 1, &frag_shader, 0);
 	qglCompileShader(vertex_shader);
 	qglCompileShader(fragment_shader);
-	qglAttachShader(program, vertex_shader);
-	qglAttachShader(program, fragment_shader);
-	qglLinkProgram(program);
-	qglUseProgram(program);
-	MODELVIEW_LOC = qglGetUniformLocation(program, "modelview");
-	PROJECTION_LOC = qglGetUniformLocation(program, "projection");
-	USE_MULTITEXTURING_LOC = qglGetUniformLocation(program, "use_multitexturing");
-	MULTITEXTURE_MODE_LOC = qglGetUniformLocation(program, "multitexture_mode");
-	ALPHATEST_MODE_LOC = qglGetUniformLocation(program, "alphatest_mode");
-	qglUniform1i(qglGetUniformLocation(program, "tex0"), 0);
-	qglUniform1i(qglGetUniformLocation(program, "tex1"), 1);
+	qglAttachShader(UBER_PROGRAM, vertex_shader);
+	qglAttachShader(UBER_PROGRAM, fragment_shader);
+	qglLinkProgram(UBER_PROGRAM);
+	qglUseProgram(UBER_PROGRAM);
+	MODELVIEW_LOC = qglGetUniformLocation(UBER_PROGRAM, "modelview");
+	PROJECTION_LOC = qglGetUniformLocation(UBER_PROGRAM, "projection");
+	USE_MULTITEXTURING_LOC = qglGetUniformLocation(UBER_PROGRAM, "use_multitexturing");
+	MULTITEXTURE_MODE_LOC = qglGetUniformLocation(UBER_PROGRAM, "multitexture_mode");
+	ALPHATEST_MODE_LOC = qglGetUniformLocation(UBER_PROGRAM, "alphatest_mode");
+	USE_VERTEX_COLOR_LOC = qglGetUniformLocation(UBER_PROGRAM, "use_vertex_color");
+	qglUniform1i(qglGetUniformLocation(UBER_PROGRAM, "tex0"), 0);
+	qglUniform1i(qglGetUniformLocation(UBER_PROGRAM, "tex1"), 1);
+	qglUniform1i(USE_VERTEX_COLOR_LOC, 0);
 }
 
 /*

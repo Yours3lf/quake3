@@ -402,6 +402,7 @@ static void DrawSkySide( struct image_s *image, const int mins[2], const int max
 	}
 #ifdef VCMODS_OPENGLES	
 	//qglDisableClientState( GL_COLOR_ARRAY);
+	qglUniform1i(USE_VERTEX_COLOR_LOC, 0);
 	//qglEnableClientState( GL_TEXTURE_COORD_ARRAY);
 	//qglTexCoordPointer( 2, GL_FLOAT, 0, s_skyTexCoords );
 	qglEnableVertexAttribArray(1);
@@ -867,6 +868,8 @@ void RB_StageIteratorSky( void ) {
 		qglColor3f( tr.identityLight, tr.identityLight, tr.identityLight );
 #endif
 
+		float modelview[16];
+		qglGetUniformfv(UBER_PROGRAM, MODELVIEW_LOC, modelview);
 		//qglPushMatrix ();
 		GL_State( 0 );
 		//qglTranslatef (backEnd.viewParms.or.origin[0], backEnd.viewParms.or.origin[1], backEnd.viewParms.or.origin[2]);
@@ -880,6 +883,7 @@ void RB_StageIteratorSky( void ) {
 		DrawSkyBox( tess.shader );
 
 		//qglPopMatrix();
+		qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, modelview);
 	}
 
 	// generate the vertexes for all the clouds, which will be drawn

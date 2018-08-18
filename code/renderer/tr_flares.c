@@ -507,6 +507,10 @@ void RB_RenderFlares (void) {
 		//qglDisable (GL_CLIP_PLANE0);
 	}
 
+	float modelview[16];
+	float projection[16];
+	qglGetUniformfv(UBER_PROGRAM, MODELVIEW_LOC, modelview);
+	qglGetUniformfv(UBER_PROGRAM, PROJECTION_LOC, projection);
 	//qglPushMatrix();
     //qglLoadIdentity();
 	qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, identity);
@@ -534,5 +538,7 @@ void RB_RenderFlares (void) {
 	//qglPopMatrix();
 	//qglMatrixMode( GL_MODELVIEW );
 	//qglPopMatrix();
+	qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, projection);
+	qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, modelview);
 }
 
