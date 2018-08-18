@@ -928,6 +928,8 @@ void S_Base_RawSamples( int stream, int samples, int rate, int width, int s_chan
 	int		intVolume;
 	portable_samplepair_t *rawsamples;
 
+	return;
+
 	if ( !s_soundStarted || s_soundMuted ) {
 		return;
 	}
@@ -1170,6 +1172,8 @@ void S_GetSoundtime(void)
 	static	int		buffers;
 	static	int		oldsamplepos;
 	int		fullsamples;
+
+	return;
 
 	fullsamples = dma.samples / dma.channels;
 
