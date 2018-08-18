@@ -131,7 +131,9 @@ void R_RenderShadowEdges( void ) {
 				indicies[2] = i2;
 				indicies[3] = i2+tess.numVertexes;
 				
-				qglVertexPointer( 3, GL_FLOAT, 16, tess.xyz );
+				//qglVertexPointer( 3, GL_FLOAT, 16, tess.xyz );
+				qglEnableVertexAttribArray(0);
+				qglVertexAttribPointer(0, 3, GL_FLOAT, 0, 16, tess.xyz);
 				qglDrawElements( GL_TRIANGLE_STRIP, 4, GL_INDEX_TYPE, indicies );
 #else
 				qglBegin( GL_TRIANGLE_STRIP );
@@ -225,7 +227,10 @@ void RB_ShadowTessEnd( void ) {
 	qglEnable( GL_CULL_FACE );
 	GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
 #ifdef VCMODS_OPENGLES
-	qglColor4f( 0.2f, 0.2f, 0.2f, 1.0f );
+	//qglColor4f( 0.2f, 0.2f, 0.2f, 1.0f );
+	float vertex_colors[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	qglEnableVertexAttribArray(3);
+	qglVertexAttribPointer(3, 4, GL_FLOAT, 0, 0, vertex_colors);
 #else
 	qglColor3f( 0.2f, 0.2f, 0.2f );
 #endif
@@ -295,7 +300,7 @@ void RB_ShadowFinish( void ) {
 	qglEnable( GL_STENCIL_TEST );
 	qglStencilFunc( GL_NOTEQUAL, 0, 255 );
 
-	qglDisable (GL_CLIP_PLANE0);
+	//qglDisable (GL_CLIP_PLANE0);
 	qglDisable (GL_CULL_FACE);
 
 	GL_Bind( tr.whiteImage );
@@ -303,7 +308,10 @@ void RB_ShadowFinish( void ) {
     //qglLoadIdentity ();
 
 #ifdef VCMODS_OPENGLES
-	qglColor4f( 0.6f, 0.6f, 0.6f, 1.0f );
+	//qglColor4f( 0.6f, 0.6f, 0.6f, 1.0f );
+	float vertex_colors[4] = { 0.6f, 0.6f, 0.6f, 1.0f };
+	qglEnableVertexAttribArray(3);
+	qglVertexAttribPointer(3, 4, GL_FLOAT, 0, 0, vertex_colors);
 #else
 	qglColor3f( 0.6f, 0.6f, 0.6f );
 #endif
@@ -313,7 +321,9 @@ void RB_ShadowFinish( void ) {
 //	GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
 
 #ifdef VCMODS_OPENGLES
-	qglVertexPointer ( 3, GL_FLOAT, 0, quad );
+	//qglVertexPointer ( 3, GL_FLOAT, 0, quad );
+	qglEnableVertexAttribArray(0);
+	qglVertexAttribPointer(0, 3, GL_FLOAT, 0, 0, quad);
 	qglDrawElements ( GL_TRIANGLE_STRIP, 6, GL_INDEX_TYPE, indicies );
 #else
 	qglBegin( GL_QUADS );
@@ -324,8 +334,13 @@ void RB_ShadowFinish( void ) {
 	qglEnd ();
 #endif
 
-	qglColor4f(1,1,1,1);
-	qglDisable( GL_STENCIL_TEST );
+	{
+		//qglColor4f(1,1,1,1);
+		float vertex_colors[4] = { 1,1,1,1 };
+		qglEnableVertexAttribArray(3);
+		qglVertexAttribPointer(3, 4, GL_FLOAT, 0, 0, vertex_colors);
+		qglDisable(GL_STENCIL_TEST);
+	}
 }
 
 

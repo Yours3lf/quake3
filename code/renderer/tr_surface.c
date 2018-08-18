@@ -336,9 +336,14 @@ void RB_SurfaceBeam( void )
 
 	GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
 #ifdef VCMODS_OPENGLES
-	qglColor4f( 1.0f, 0.0f, 0.0f, 1.0f );
+	//qglColor4f( 1.0f, 0.0f, 0.0f, 1.0f );
+	float vertex_colors[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	qglEnableVertexAttribArray(3);
+	qglVertexAttribPointer(3, 4, GL_FLOAT, 0, 0, vertex_colors);
 
-	qglVertexPointer( 3, GL_FLOAT, 0, points );
+	//qglVertexPointer( 3, GL_FLOAT, 0, points );
+	qglEnableVertexAttribArray(0);
+	qglVertexAttribPointer(0, 3, GL_FLOAT, 0, 0, points);
 	qglDrawArrays( GL_TRIANGLE_STRIP, 0, NUM_BEAM_SEGS*2);
 #else
 	qglColor3f( 1, 0, 0 );
@@ -1194,9 +1199,13 @@ void RB_SurfaceAxis( void ) {
 	GL_Bind( tr.whiteImage );
 	qglLineWidth( 3 );
 #ifdef VCMODS_OPENGLES
-	qglEnableClientState( GL_COLOR_ARRAY );
-	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, colors );
-	qglVertexPointer( 3, GL_FLOAT, 0, verts );
+	//qglEnableClientState( GL_COLOR_ARRAY );
+	//qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, colors );
+	qglEnableVertexAttribArray(3);
+	qglVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, 0, 0, colors);
+	//qglVertexPointer( 3, GL_FLOAT, 0, verts );
+	qglEnableVertexAttribArray(0);
+	qglVertexAttribPointer(0, 3, GL_FLOAT, 0, 0, verts);
 
 	qglDrawElements( GL_LINES, 6, GL_INDEX_TYPE, indicies );
 #else

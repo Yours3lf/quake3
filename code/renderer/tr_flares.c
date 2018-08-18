@@ -504,17 +504,22 @@ void RB_RenderFlares (void) {
 	}
 
 	if ( backEnd.viewParms.isPortal ) {
-		qglDisable (GL_CLIP_PLANE0);
+		//qglDisable (GL_CLIP_PLANE0);
 	}
 
 	//qglPushMatrix();
     //qglLoadIdentity();
-	qglMatrixMode( GL_PROJECTION );
+	//qglMatrixMode( GL_PROJECTION );
 	//qglPushMatrix();
     //qglLoadIdentity();
-	qglOrtho( backEnd.viewParms.viewportX, backEnd.viewParms.viewportX + backEnd.viewParms.viewportWidth,
-			  backEnd.viewParms.viewportY, backEnd.viewParms.viewportY + backEnd.viewParms.viewportHeight,
-			  -99999, 99999 );
+	float ortho[16];
+	getOrtho(ortho, backEnd.viewParms.viewportX, backEnd.viewParms.viewportX + backEnd.viewParms.viewportWidth,
+				  backEnd.viewParms.viewportY, backEnd.viewParms.viewportY + backEnd.viewParms.viewportHeight,
+				  -99999, 99999);
+	qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, ortho);
+	//qglOrtho( backEnd.viewParms.viewportX, backEnd.viewParms.viewportX + backEnd.viewParms.viewportWidth,
+	//		  backEnd.viewParms.viewportY, backEnd.viewParms.viewportY + backEnd.viewParms.viewportHeight,
+	//		  -99999, 99999 );
 
 	for ( f = r_activeFlares ; f ; f = f->next ) {
 		if ( f->frameSceneNum == backEnd.viewParms.frameSceneNum
@@ -525,7 +530,7 @@ void RB_RenderFlares (void) {
 	}
 
 	//qglPopMatrix();
-	qglMatrixMode( GL_MODELVIEW );
+	//qglMatrixMode( GL_MODELVIEW );
 	//qglPopMatrix();
 }
 

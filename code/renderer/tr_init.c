@@ -238,12 +238,12 @@ void GL_CheckErrors( void ) {
 		case GL_INVALID_OPERATION:
 			strcpy( s, "GL_INVALID_OPERATION" );
 			break;
-		case GL_STACK_OVERFLOW:
-			strcpy( s, "GL_STACK_OVERFLOW" );
-			break;
-		case GL_STACK_UNDERFLOW:
-			strcpy( s, "GL_STACK_UNDERFLOW" );
-			break;
+		//case GL_STACK_OVERFLOW:
+		//	strcpy( s, "GL_STACK_OVERFLOW" );
+		//	break;
+		//case GL_STACK_UNDERFLOW:
+		//	strcpy( s, "GL_STACK_UNDERFLOW" );
+		//	break;
 		case GL_OUT_OF_MEMORY:
 			strcpy( s, "GL_OUT_OF_MEMORY" );
 			break;
@@ -739,28 +739,31 @@ void GL_SetDefaultState( void )
 
 	qglCullFace(GL_FRONT);
 
-	qglColor4f (1,1,1,1);
+	//qglColor4f (1,1,1,1);
+	float vertex_colors[4] = { 1, 1, 1, 1.0f };
+	qglEnableVertexAttribArray(3);
+	qglVertexAttribPointer(3, 4, GL_FLOAT, 0, 0, vertex_colors);
 
 	// initialize downstream texture unit if we're running
 	// in a multitexture environment
 	if ( qglActiveTextureARB ) {
 		GL_SelectTexture( 1 );
 		GL_TextureMode( r_textureMode->string );
-		GL_TexEnv( GL_MODULATE );
+		//GL_TexEnv( GL_MODULATE );
 		qglDisable( GL_TEXTURE_2D );
 		GL_SelectTexture( 0 );
 	}
 
 	qglEnable(GL_TEXTURE_2D);
 	GL_TextureMode( r_textureMode->string );
-	GL_TexEnv( GL_MODULATE );
+	//GL_TexEnv( GL_MODULATE );
 
-	qglShadeModel( GL_SMOOTH );
+	//qglShadeModel( GL_SMOOTH );
 	qglDepthFunc( GL_LEQUAL );
 
 	// the vertex array is always enabled, but the color and texture
 	// arrays are enabled and disabled around the compiled vertex array call
-	qglEnableClientState (GL_VERTEX_ARRAY);
+	//qglEnableClientState (GL_VERTEX_ARRAY);
 
 	//
 	// make sure our GL state vector is set correctly
@@ -1023,6 +1026,56 @@ void R_Register( void )
 	ri.Cmd_AddCommand( "gfxinfo", GfxInfo_f );
 }
 
+#define STRINGIFY(s) #s
+
+int MODELVIEW_LOC;
+int PROJECTION_LOC;
+int USE_MULTITEXTURING_LOC;
+int MULTITEXTURE_MODE_LOC;
+
+void LoadUberShader()
+{
+	char* vert_shader = 0;
+	{
+		FILE* f = fopen("../../code/renderer/ubershader.vert", "r");
+		fseek(f, 0, SEEK_END);
+		int size = ftell(f);
+		rewind(f);
+		vert_shader = (char*)malloc(size+1);
+		fread(vert_shader, 1, size, f);
+		fclose(f);
+		vert_shader[size] = '\0';
+	}
+
+	char* frag_shader = 0;
+	{
+		FILE* f = fopen("../../code/renderer/ubershader.frag", "r");
+		fseek(f, 0, SEEK_END);
+		int size = ftell(f);
+		rewind(f);
+		frag_shader = (char*)malloc(size+1);
+		fread(frag_shader, 1, size, f);
+		fclose(f);
+		frag_shader[size] = '\0';
+	}
+
+	GLuint program = qglCreateProgram();
+	GLuint vertex_shader = qglCreateShader(GL_VERTEX_SHADER);
+	GLuint fragment_shader = qglCreateShader(GL_FRAGMENT_SHADER);
+	qglShaderSource(vertex_shader, 1, &vert_shader, 0);
+	qglShaderSource(fragment_shader, 1, &frag_shader, 0);
+	qglCompileShader(vertex_shader);
+	qglCompileShader(fragment_shader);
+	qglAttachShader(program, vertex_shader);
+	qglAttachShader(program, fragment_shader);
+	qglLinkProgram(program);
+	qglUseProgram(program);
+	MODELVIEW_LOC = qglGetUniformLocation(program, "modelview");
+	PROJECTION_LOC = qglGetUniformLocation(program, "projection");
+	USE_MULTITEXTURING_LOC = qglGetUniformLocation(program, "use_multitexturing");
+	MULTITEXTURE_MODE_LOC = qglGetUniformLocation(program, "multitexture_mode");
+}
+
 /*
 ===============
 R_Init
@@ -1119,6 +1172,7 @@ void R_Init( void ) {
 
 	R_InitFreeType();
 
+	LoadUberShader();
 
 	err = qglGetError();
 	if ( err != GL_NO_ERROR )

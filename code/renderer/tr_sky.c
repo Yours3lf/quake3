@@ -401,10 +401,14 @@ static void DrawSkySide( struct image_s *image, const int mins[2], const int max
 #endif
 	}
 #ifdef VCMODS_OPENGLES	
-	qglDisableClientState( GL_COLOR_ARRAY);
-	qglEnableClientState( GL_TEXTURE_COORD_ARRAY);
-	qglTexCoordPointer( 2, GL_FLOAT, 0, s_skyTexCoords );
-	qglVertexPointer  ( 3, GL_FLOAT, 0, s_skyPoints );
+	//qglDisableClientState( GL_COLOR_ARRAY);
+	//qglEnableClientState( GL_TEXTURE_COORD_ARRAY);
+	//qglTexCoordPointer( 2, GL_FLOAT, 0, s_skyTexCoords );
+	qglEnableVertexAttribArray(1);
+	qglVertexAttribPointer(1, 2, GL_FLOAT, 0, 0, s_skyTexCoords);
+	//qglVertexPointer  ( 3, GL_FLOAT, 0, s_skyPoints );
+	qglEnableVertexAttribArray(0);
+	qglVertexAttribPointer(0, 3, GL_FLOAT, 0, 0, s_skyPoints);
 	qglDrawElements( GL_TRIANGLE_STRIP, i, GL_INDEX_TYPE, indicies );
 	Hunk_FreeTempMemory(indicies);
 #endif
@@ -734,8 +738,20 @@ void RB_DrawSun( void ) {
 	if ( !r_drawSun->integer ) {
 		return;
 	}
-	qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
-	qglTranslatef (backEnd.viewParms.or.origin[0], backEnd.viewParms.or.origin[1], backEnd.viewParms.or.origin[2]);
+
+	float model[16];
+	memcpy(model, backEnd.viewParms.world.modelMatrix, sizeof(float) * 16);
+	model[3] += backEnd.viewParms. or .origin[0];
+	model[7] += backEnd.viewParms. or .origin[1];
+	model[11] += backEnd.viewParms. or .origin[2];
+	//{1, 0, 0, backEnd.viewParms. or .origin[0],
+	 //0, 1, 0, backEnd.viewParms. or .origin[1],
+	 //0, 0, 1, backEnd.viewParms. or .origin[2],
+	 //0, 0, 0, 1};
+	//qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
+	//qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, backEnd.viewParms.world.modelMatrix);
+	qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, model);
+	//qglTranslatef (backEnd.viewParms.or.origin[0], backEnd.viewParms.or.origin[1], backEnd.viewParms.or.origin[2]);
 
 	dist = 	backEnd.viewParms.zFar / 1.75;		// div sqrt(3)
 	size = dist * 0.4;
@@ -843,14 +859,23 @@ void RB_StageIteratorSky( void ) {
 	// draw the outer skybox
 	if ( tess.shader->sky.outerbox[0] && tess.shader->sky.outerbox[0] != tr.defaultImage ) {
 #ifdef VCMODS_OPENGLES
-		qglColor4f( tr.identityLight, tr.identityLight, tr.identityLight, 1.0f );
+		//qglColor4f( tr.identityLight, tr.identityLight, tr.identityLight, 1.0f );
+		float vertex_colors[4] = { tr.identityLight, tr.identityLight, tr.identityLight, 1.0f };
+		qglEnableVertexAttribArray(3);
+		qglVertexAttribPointer(3, 4, GL_FLOAT, 0, 0, vertex_colors);
 #else
 		qglColor3f( tr.identityLight, tr.identityLight, tr.identityLight );
 #endif
 
 		//qglPushMatrix ();
 		GL_State( 0 );
-		qglTranslatef (backEnd.viewParms.or.origin[0], backEnd.viewParms.or.origin[1], backEnd.viewParms.or.origin[2]);
+		//qglTranslatef (backEnd.viewParms.or.origin[0], backEnd.viewParms.or.origin[1], backEnd.viewParms.or.origin[2]);
+		float model[16] = 
+		{1, 0, 0, backEnd.viewParms.or.origin[0],
+		 0, 1, 0, backEnd.viewParms.or.origin[1],
+		 0, 0, 1, backEnd.viewParms.or.origin[2],
+		 0, 0, 0, 1};
+		qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, model);
 
 		DrawSkyBox( tess.shader );
 

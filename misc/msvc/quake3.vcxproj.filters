@@ -40,6 +40,9 @@
     <Filter Include="speex">
       <UniqueIdentifier>{fba7065c-010a-47f2-bed8-6295cee34006}</UniqueIdentifier>
     </Filter>
+    <Filter Include="renderer\Source Files\glcode">
+      <UniqueIdentifier>{3297cc36-f5b4-4ef4-aba4-69f9047ad90b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\code\client\cl_avi.c">
@@ -423,25 +426,13 @@
     <ClCompile Include="..\..\code\renderer\tr_animation.c">
       <Filter>renderer\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_backend.c">
-      <Filter>renderer\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_bsp.c">
-      <Filter>renderer\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_cmds.c">
       <Filter>renderer\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_curve.c">
       <Filter>renderer\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_flares.c">
-      <Filter>renderer\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_font.c">
-      <Filter>renderer\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_image.c">
       <Filter>renderer\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_image_bmp.c">
@@ -459,13 +450,7 @@
     <ClCompile Include="..\..\code\renderer\tr_image_tga.c">
       <Filter>renderer\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_init.c">
-      <Filter>renderer\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_light.c">
-      <Filter>renderer\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_main.c">
       <Filter>renderer\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_marks.c">
@@ -483,22 +468,10 @@
     <ClCompile Include="..\..\code\renderer\tr_scene.c">
       <Filter>renderer\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_shade.c">
-      <Filter>renderer\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_shade_calc.c">
       <Filter>renderer\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_shader.c">
-      <Filter>renderer\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_shadows.c">
-      <Filter>renderer\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_sky.c">
-      <Filter>renderer\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\code\renderer\tr_surface.c">
       <Filter>renderer\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\code\renderer\tr_world.c">
@@ -624,6 +597,36 @@
     <ClCompile Include="..\..\code\libspeex\window.c">
       <Filter>speex</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_flares.c">
+      <Filter>renderer\Source Files\glcode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_image.c">
+      <Filter>renderer\Source Files\glcode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_init.c">
+      <Filter>renderer\Source Files\glcode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_main.c">
+      <Filter>renderer\Source Files\glcode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_shade.c">
+      <Filter>renderer\Source Files\glcode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_shadows.c">
+      <Filter>renderer\Source Files\glcode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_sky.c">
+      <Filter>renderer\Source Files\glcode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_surface.c">
+      <Filter>renderer\Source Files\glcode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_backend.c">
+      <Filter>renderer\Source Files\glcode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\renderer\tr_cmds.c">
+      <Filter>renderer\Source Files\glcode</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\game\bg_public.h">
@@ -672,9 +675,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\qcommon\qfiles.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\renderer\qgl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\win32\resource.h">
@@ -826,6 +826,9 @@
     </ClInclude>
     <ClInclude Include="..\..\code\libspeex\config.h">
       <Filter>speex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\renderer\qgl.h">
+      <Filter>renderer\Source Files\glcode</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -79,7 +79,7 @@ void GL_SelectTexture( int unit )
 #endif
 		GLimp_LogComment( "glActiveTextureARB( GL_TEXTURE0_ARB )\n" );
 #ifdef VCMODS_OPENGLES
-		qglClientActiveTextureARB( GL_TEXTURE0 );
+		//qglClientActiveTextureARB( GL_TEXTURE0 );
 #else
 		qglClientActiveTextureARB( GL_TEXTURE0_ARB );
 #endif
@@ -94,7 +94,7 @@ void GL_SelectTexture( int unit )
 #endif
 		GLimp_LogComment( "glActiveTextureARB( GL_TEXTURE1_ARB )\n" );
 #ifdef VCMODS_OPENGLES
-		qglClientActiveTextureARB( GL_TEXTURE1);
+		//qglClientActiveTextureARB( GL_TEXTURE1);
 #else
 		qglClientActiveTextureARB( GL_TEXTURE1_ARB );
 #endif
@@ -190,20 +190,24 @@ void GL_TexEnv( int env )
 
 	glState.texEnv[glState.currenttmu] = env;
 
-
+	
 	switch ( env )
 	{
 	case GL_MODULATE:
-		qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+		//qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+		qglUniform1i(MULTITEXTURE_MODE_LOC, 0);
 		break;
 	case GL_REPLACE:
-		qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+		//qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+		qglUniform1i(MULTITEXTURE_MODE_LOC, 1);
 		break;
 	case GL_DECAL:
-		qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
+		//qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
+		qglUniform1i(MULTITEXTURE_MODE_LOC, 2);
 		break;
 	case GL_ADD:
-		qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD );
+		//qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD );
+		qglUniform1i(MULTITEXTURE_MODE_LOC, 3);
 		break;
 	default:
 		ri.Error( ERR_DROP, "GL_TexEnv: invalid env '%d' passed\n", env );
@@ -377,7 +381,7 @@ void GL_State( unsigned long stateBits )
 	// alpha test
 	//
 	if ( diff & GLS_ATEST_BITS )
-	{
+	{/*
 		switch ( stateBits & GLS_ATEST_BITS )
 		{
 		case 0:
@@ -398,7 +402,7 @@ void GL_State( unsigned long stateBits )
 		default:
 			assert( 0 );
 			break;
-		}
+		}*/
 	}
 
 	glState.glStateBits = stateBits;
@@ -429,9 +433,10 @@ static void RB_Hyperspace( void ) {
 
 
 static void SetViewportAndScissor( void ) {
-	qglMatrixMode(GL_PROJECTION);
-	qglLoadMatrixf( backEnd.viewParms.projectionMatrix );
-	qglMatrixMode(GL_MODELVIEW);
+	//qglMatrixMode(GL_PROJECTION);
+	//qglLoadMatrixf( backEnd.viewParms.projectionMatrix );
+	qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, backEnd.viewParms.projectionMatrix);
+	//qglMatrixMode(GL_MODELVIEW);
 
 	// set the window clipping
 	qglViewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY, 
@@ -469,8 +474,6 @@ void RB_BeginDrawingView (void) {
 	//
 	// set the modelview matrix for the viewer
 	//
-
-	qglClearColor(0.8f, 0.7f, 0.4f, 1.0f);
 
 	SetViewportAndScissor();
 
@@ -532,11 +535,12 @@ void RB_BeginDrawingView (void) {
 		plane2[2] = DotProduct (backEnd.viewParms.or.axis[2], plane);
 		plane2[3] = DotProduct (plane, backEnd.viewParms.or.origin) - plane[3];
 
-		qglLoadMatrixf( s_flipMatrix );
-		qglClipPlane (GL_CLIP_PLANE0, plane2);
-		qglEnable (GL_CLIP_PLANE0);
+		//qglLoadMatrixf( s_flipMatrix );
+		qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, s_flipMatrix);
+		//qglClipPlane (GL_CLIP_PLANE0, plane2);
+		//qglEnable (GL_CLIP_PLANE0);
 	} else {
-		qglDisable (GL_CLIP_PLANE0);
+		//qglDisable (GL_CLIP_PLANE0);
 	}
 }
 
@@ -641,7 +645,8 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 				R_TransformDlights( backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.or );
 			}
 
-			qglLoadMatrixf( backEnd.or.modelMatrix );
+			//qglLoadMatrixf( backEnd.or.modelMatrix );
+			qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, backEnd.or.modelMatrix);
 
 			//
 			// change depthrange. Also change projection matrix so first person weapon does not look like coming
@@ -658,9 +663,10 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 							if(oldDepthRange)
 							{
 								// was not a crosshair but now is, change back proj matrix
-								qglMatrixMode(GL_PROJECTION);
-								qglLoadMatrixf(backEnd.viewParms.projectionMatrix);
-								qglMatrixMode(GL_MODELVIEW);
+								//qglMatrixMode(GL_PROJECTION);
+								//qglLoadMatrixf(backEnd.viewParms.projectionMatrix);
+								qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, backEnd.viewParms.projectionMatrix);
+								//qglMatrixMode(GL_MODELVIEW);
 							}
 						}
 						else
@@ -669,9 +675,10 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 
 							R_SetupProjection(&temp, r_znear->value, qfalse);
 
-							qglMatrixMode(GL_PROJECTION);
-							qglLoadMatrixf(temp.projectionMatrix);
-							qglMatrixMode(GL_MODELVIEW);
+							//qglMatrixMode(GL_PROJECTION);
+							//qglLoadMatrixf(temp.projectionMatrix);
+							qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, temp.projectionMatrix);
+							//qglMatrixMode(GL_MODELVIEW);
 						}
 					}
 
@@ -686,9 +693,10 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 				{
 					if(!wasCrosshair && backEnd.viewParms.stereoFrame != STEREO_CENTER)
 					{
-						qglMatrixMode(GL_PROJECTION);
-						qglLoadMatrixf(backEnd.viewParms.projectionMatrix);
-						qglMatrixMode(GL_MODELVIEW);
+						//qglMatrixMode(GL_PROJECTION);
+						//qglLoadMatrixf(backEnd.viewParms.projectionMatrix);
+						qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, backEnd.viewParms.projectionMatrix);
+						//qglMatrixMode(GL_MODELVIEW);
 					}
 
 #ifdef VCMODS_OPENGLES
@@ -717,7 +725,8 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	}
 
 	// go back to the world modelview matrix
-	qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
+	//qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
+	qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, backEnd.viewParms.world.modelMatrix);
 	if ( depthRange ) {
 #ifdef VCMODS_OPENGLES
 		qglDepthRange (0, 1.0f);
@@ -757,22 +766,27 @@ void	RB_SetGL2D (void) {
 	// set 2D virtual screen size
 	qglViewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
 	qglScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-	qglMatrixMode(GL_PROJECTION);
+	//qglMatrixMode(GL_PROJECTION);
     //qglLoadIdentity ();
+	qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, identity);
 #ifdef VCMODS_OPENGLES
-	qglOrtho (0.0f, glConfig.vidWidth, glConfig.vidHeight, 0.0f, 0.0f, 1.0f);
+	//qglOrtho (0.0f, glConfig.vidWidth, glConfig.vidHeight, 0.0f, 0.0f, 1.0f);
+	float ortho[16];
+	getOrtho(ortho, 0.0f, glConfig.vidWidth, glConfig.vidHeight, 0.0f, 0.0f, 1.0f);
+	qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, ortho);
 #else
 	qglOrtho (0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1);
 #endif
-	qglMatrixMode(GL_MODELVIEW);
+	//qglMatrixMode(GL_MODELVIEW);
     //qglLoadIdentity ();
+	qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, identity);
 
 	GL_State( GLS_DEPTHTEST_DISABLE |
 			  GLS_SRCBLEND_SRC_ALPHA |
 			  GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
 	qglDisable( GL_CULL_FACE );
-	qglDisable( GL_CLIP_PLANE0 );
+	//qglDisable( GL_CLIP_PLANE0 );
 
 	// set time for 2D shaders
 	backEnd.refdef.time = ri.Milliseconds();
@@ -853,7 +867,10 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 	RB_SetGL2D();
 
 #ifdef VCMODS_OPENGLES
-	qglColor4f( tr.identityLight, tr.identityLight, tr.identityLight, 1.0f );
+	//qglColor4f( tr.identityLight, tr.identityLight, tr.identityLight, 1.0f );
+	float vertex_colors[4] = { tr.identityLight, tr.identityLight, tr.identityLight, 1.0f };
+	qglEnableVertexAttribArray(3);
+	qglVertexAttribPointer(3, 4, GL_FLOAT, 0, 0, vertex_colors);
 
 	verts[0][0] = x;  verts[0][1] = y;
 	verts[1][0] = x+w;  verts[1][1] = y;
@@ -865,11 +882,15 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 	texcoords[2][0] = (cols-0.5f)/cols;   texcoords[2][1] = (rows-0.5f)/rows;
 	texcoords[3][0] = 0.5f/cols;      texcoords[3][1] = (rows-0.5f)/rows;
 	
-	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	qglTexCoordPointer( 2, GL_FLOAT, 0, texcoords );
-	qglVertexPointer  ( 2, GL_FLOAT, 0, verts );
+	//qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	//qglTexCoordPointer( 2, GL_FLOAT, 0, texcoords );
+	//qglVertexPointer  ( 2, GL_FLOAT, 0, verts );
+	qglEnableVertexAttribArray(1);
+	qglVertexAttribPointer(1, 2, GL_FLOAT, 0, 0, texcoords);
+	qglEnableVertexAttribArray(0);
+	qglVertexAttribPointer(0, 2, GL_FLOAT, 0, 0, verts);
 	qglDrawElements( GL_TRIANGLE_STRIP, 6, GL_INDEX_TYPE, indicies );
-	qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	//qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
 #else
 	qglColor3f( tr.identityLight, tr.identityLight, tr.identityLight );
 
@@ -1086,7 +1107,7 @@ void RB_ShowImages( void ) {
 
 	start = ri.Milliseconds();
 #ifdef VCMODS_OPENGLES
-	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	//qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
 #endif
 
 	for ( i=0 ; i<tr.numImages ; i++ ) {
@@ -1109,8 +1130,12 @@ void RB_ShowImages( void ) {
 		verts[2][0] = x+w;  verts[2][1] = y+h;
 		verts[3][0] = x;  verts[3][1] = y+h;
 		
-		qglTexCoordPointer( 2, GL_FLOAT, 0, texcoords );
-		qglVertexPointer  ( 2, GL_FLOAT, 0, verts );
+		//qglTexCoordPointer( 2, GL_FLOAT, 0, texcoords );
+		//qglVertexPointer  ( 2, GL_FLOAT, 0, verts );
+		qglEnableVertexAttribArray(1);
+		qglVertexAttribPointer(1, 2, GL_FLOAT, 0, 0, texcoords);
+		qglEnableVertexAttribArray(0);
+		qglVertexAttribPointer(0, 2, GL_FLOAT, 0, 0, verts);
 		qglDrawElements( GL_TRIANGLE_STRIP, 6, GL_INDEX_TYPE, indicies );
 #else
 		GL_Bind( image );
@@ -1128,7 +1153,7 @@ void RB_ShowImages( void ) {
 	}
 
 #ifdef VCMODS_OPENGLES
-	qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	//qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
 #endif
 	qglFinish();
 

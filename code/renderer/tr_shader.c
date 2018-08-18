@@ -1712,7 +1712,8 @@ typedef struct {
 	int		multitextureEnv;
 	int		multitextureBlend;
 } collapse_t;
-
+#define GL_MODULATE                       0x2100
+#define GL_ADD                            0x0104
 static collapse_t	collapse[] = {
 	{ 0, GLS_DSTBLEND_SRC_COLOR | GLS_SRCBLEND_ZERO,	
 		GL_MODULATE, 0 },
@@ -1800,9 +1801,9 @@ static qboolean CollapseMultitexture( void ) {
 	}
 
 	// GL_ADD is a separate extension
-	if ( collapse[i].multitextureEnv == GL_ADD && !glConfig.textureEnvAddAvailable ) {
-		return qfalse;
-	}
+	//if ( collapse[i].multitextureEnv == GL_ADD && !glConfig.textureEnvAddAvailable ) {
+	//	return qfalse;
+	//}
 
 	// make sure waveforms have identical parameters
 	if ( ( stages[0].rgbGen != stages[1].rgbGen ) ||
@@ -1811,9 +1812,9 @@ static qboolean CollapseMultitexture( void ) {
 	}
 
 	// an add collapse can only have identity colors
-	if ( collapse[i].multitextureEnv == GL_ADD && stages[0].rgbGen != CGEN_IDENTITY ) {
-		return qfalse;
-	}
+	//if ( collapse[i].multitextureEnv == GL_ADD && stages[0].rgbGen != CGEN_IDENTITY ) {
+	//	return qfalse;
+	//}
 
 	if ( stages[0].rgbGen == CGEN_WAVEFORM )
 	{
@@ -2828,15 +2829,15 @@ void	R_ShaderList_f (void) {
 		} else {
 			ri.Printf (PRINT_ALL, "  ");
 		}
-		if ( shader->multitextureEnv == GL_ADD ) {
-			ri.Printf( PRINT_ALL, "MT(a) " );
-		} else if ( shader->multitextureEnv == GL_MODULATE ) {
-			ri.Printf( PRINT_ALL, "MT(m) " );
-		} else if ( shader->multitextureEnv == GL_DECAL ) {
-			ri.Printf( PRINT_ALL, "MT(d) " );
-		} else {
-			ri.Printf( PRINT_ALL, "      " );
-		}
+		//if ( shader->multitextureEnv == GL_ADD ) {
+		//	ri.Printf( PRINT_ALL, "MT(a) " );
+		//} else if ( shader->multitextureEnv == GL_MODULATE ) {
+		//	ri.Printf( PRINT_ALL, "MT(m) " );
+		//} else if ( shader->multitextureEnv == GL_DECAL ) {
+		//	ri.Printf( PRINT_ALL, "MT(d) " );
+		//} else {
+		//	ri.Printf( PRINT_ALL, "      " );
+		//}
 		if ( shader->explicitlyDefined ) {
 			ri.Printf( PRINT_ALL, "E " );
 		} else {
