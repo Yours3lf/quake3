@@ -749,14 +749,14 @@ void GL_SetDefaultState( void )
 	if ( qglActiveTextureARB ) {
 		GL_SelectTexture( 1 );
 		GL_TextureMode( r_textureMode->string );
-		//GL_TexEnv( GL_MODULATE );
+		GL_TexEnv( GL_MODULATE );
 		qglDisable( GL_TEXTURE_2D );
 		GL_SelectTexture( 0 );
 	}
 
 	qglEnable(GL_TEXTURE_2D);
 	GL_TextureMode( r_textureMode->string );
-	//GL_TexEnv( GL_MODULATE );
+	GL_TexEnv( GL_MODULATE );
 
 	//qglShadeModel( GL_SMOOTH );
 	qglDepthFunc( GL_LEQUAL );
@@ -1032,6 +1032,7 @@ int MODELVIEW_LOC;
 int PROJECTION_LOC;
 int USE_MULTITEXTURING_LOC;
 int MULTITEXTURE_MODE_LOC;
+int ALPHATEST_MODE_LOC;
 
 void LoadUberShader()
 {
@@ -1074,6 +1075,9 @@ void LoadUberShader()
 	PROJECTION_LOC = qglGetUniformLocation(program, "projection");
 	USE_MULTITEXTURING_LOC = qglGetUniformLocation(program, "use_multitexturing");
 	MULTITEXTURE_MODE_LOC = qglGetUniformLocation(program, "multitexture_mode");
+	ALPHATEST_MODE_LOC = qglGetUniformLocation(program, "alphatest_mode");
+	qglUniform1i(qglGetUniformLocation(program, "tex0"), 0);
+	qglUniform1i(qglGetUniformLocation(program, "tex1"), 1);
 }
 
 /*

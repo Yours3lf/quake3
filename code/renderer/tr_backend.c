@@ -381,28 +381,32 @@ void GL_State( unsigned long stateBits )
 	// alpha test
 	//
 	if ( diff & GLS_ATEST_BITS )
-	{/*
+	{
 		switch ( stateBits & GLS_ATEST_BITS )
 		{
 		case 0:
-			qglDisable( GL_ALPHA_TEST );
+			//qglDisable( GL_ALPHA_TEST );
+			qglUniform1i(ALPHATEST_MODE_LOC, ALPHATEST_DISABLE);	
 			break;
 		case GLS_ATEST_GT_0:
-			qglEnable( GL_ALPHA_TEST );
-			qglAlphaFunc( GL_GREATER, 0.0f );
+			//qglEnable( GL_ALPHA_TEST );
+			//qglAlphaFunc( GL_GREATER, 0.0f );
+			qglUniform1i(ALPHATEST_MODE_LOC, ALPHATEST_GREATER);
 			break;
 		case GLS_ATEST_LT_80:
-			qglEnable( GL_ALPHA_TEST );
-			qglAlphaFunc( GL_LESS, 0.5f );
+			//qglEnable( GL_ALPHA_TEST );
+			//qglAlphaFunc( GL_LESS, 0.5f );
+			qglUniform1i(ALPHATEST_MODE_LOC, ALPHATEST_LESS);
 			break;
 		case GLS_ATEST_GE_80:
-			qglEnable( GL_ALPHA_TEST );
-			qglAlphaFunc( GL_GEQUAL, 0.5f );
+			//qglEnable( GL_ALPHA_TEST );
+			//qglAlphaFunc( GL_GEQUAL, 0.5f );
+			qglUniform1i(ALPHATEST_MODE_LOC, ALPHATEST_GREATEREQUAL);
 			break;
 		default:
 			assert( 0 );
 			break;
-		}*/
+		}
 	}
 
 	glState.glStateBits = stateBits;

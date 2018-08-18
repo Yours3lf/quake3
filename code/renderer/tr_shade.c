@@ -1486,7 +1486,7 @@ void RB_StageIteratorLightmappedMultitexture( void ) {
 	if ( r_lightmap->integer ) {
 		GL_TexEnv( GL_REPLACE );
 	} else {
-		//GL_TexEnv( GL_MODULATE );
+		GL_TexEnv( GL_MODULATE );
 	}
 	R_BindAnimatedImage( &tess.xstages[0]->bundle[1] );
 	//qglEnableClientState( GL_TEXTURE_COORD_ARRAY );

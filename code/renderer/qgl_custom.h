@@ -15,14 +15,21 @@
 #define qglUniform1i glUniform1i
 //glUniform
 
-#define GL_MODULATE 0
-#define GL_DECAL 2
-#define GL_ADD 3
+#define GL_MODULATE                       0x2100
+#define GL_ADD                            0x0104
+#define GL_DECAL						0x2101
+
+#define ALPHATEST_DISABLE 0
+#define ALPHATEST_GREATER 1
+#define ALPHATEST_LESS 2
+#define ALPHATEST_GREATEREQUAL 3
+
 
 extern int MODELVIEW_LOC;
 extern int PROJECTION_LOC;
 extern int USE_MULTITEXTURING_LOC;
 extern int MULTITEXTURE_MODE_LOC;
+extern int ALPHATEST_MODE_LOC;
 
 static float identity[16] =
 {

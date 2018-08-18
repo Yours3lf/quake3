@@ -509,9 +509,11 @@ void RB_RenderFlares (void) {
 
 	//qglPushMatrix();
     //qglLoadIdentity();
+	qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, identity);
 	//qglMatrixMode( GL_PROJECTION );
 	//qglPushMatrix();
     //qglLoadIdentity();
+	qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, identity);
 	float ortho[16];
 	getOrtho(ortho, backEnd.viewParms.viewportX, backEnd.viewParms.viewportX + backEnd.viewParms.viewportWidth,
 				  backEnd.viewParms.viewportY, backEnd.viewParms.viewportY + backEnd.viewParms.viewportHeight,

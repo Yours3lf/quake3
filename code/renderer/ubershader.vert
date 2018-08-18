@@ -18,5 +18,5 @@ void main()
 	texcoord0 = inTexcoord0;
 	texcoord1 = inTexcoord1;
 	color = inColor;
-	gl_Position = vec4(inVertex.xyz, 1.0) * modelview * projection;
+	gl_Position = projection * modelview * vec4(inVertex.xyz, 1.0);
 }

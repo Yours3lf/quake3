@@ -750,8 +750,8 @@ void RB_DrawSun( void ) {
 	 //0, 0, 0, 1};
 	//qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
 	//qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, backEnd.viewParms.world.modelMatrix);
-	qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, model);
 	//qglTranslatef (backEnd.viewParms.or.origin[0], backEnd.viewParms.or.origin[1], backEnd.viewParms.or.origin[2]);
+	qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, model);
 
 	dist = 	backEnd.viewParms.zFar / 1.75;		// div sqrt(3)
 	size = dist * 0.4;
