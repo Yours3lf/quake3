@@ -524,8 +524,6 @@ main
 =================
 */
 
-HINSTANCE g_hInstance;
-
 #ifndef WIN32
 int main( int argc, char **argv )
 {
@@ -533,6 +531,8 @@ int main( int argc, char **argv )
    return mymain(argc, argv);
 }
 #else
+HINSTANCE g_hInstance;
+
 int CALLBACK WinMain(
 _In_ HINSTANCE hInstance,
 _In_ HINSTANCE hPrevInstance,
