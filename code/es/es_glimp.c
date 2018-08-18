@@ -241,7 +241,6 @@ void GLimp_LogComment( char *comment )
 
 #ifdef WIN32
 HWND g_window;
-HDC g_hdc;
 #else
 EGLNativeWindowType g_window;
 #endif
@@ -312,7 +311,8 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, Nati
 #ifndef WIN32
    g_EGLDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 #else
-   g_EGLDisplay = eglGetDisplay(g_hdc);
+   HDC hdc = GetDC(g_window);
+   g_EGLDisplay = eglGetDisplay(hdc);
 #endif
    if (g_EGLDisplay == EGL_NO_DISPLAY) {
       ri.Printf(PRINT_ALL, "eglGetDisplay() failed\n");
@@ -332,7 +332,7 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, Nati
 
    //if (!eglSaneChooseConfigBRCM(g_EGLDisplay, s_configAttribs, &g_EGLConfig, 1, &numConfigs)) {
    if (!eglChooseConfig(g_EGLDisplay, s_configAttribs, &g_EGLConfig, 1, &numConfigs)) {
-      ri.Printf(PRINT_ALL, "eglSaneChooseConfigBRCM() failed\n");
+      ri.Printf(PRINT_ALL, "eglSaneChooseConfig() failed\n");
       return qfalse;
    }
    if (numConfigs == 0) {
@@ -354,6 +354,10 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, Nati
          "depth=%d,stencil=%d, samples=%d,sample_buffers=%d\n",
          (int)g_EGLConfig, r, g, b, a, depth, stencil, samples, sample_buffers);
    }
+
+#ifdef WIN32
+   ReleaseDC(g_window, hdc);
+#endif
 
    EGLint contextAttributes[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
 
@@ -555,8 +559,6 @@ void GLimp_Init( void )
    g_window = createXWindow(512, 512);
 #else
    IN_Init();
-
-   g_hdc = GetDC(g_window);
 #endif
 
    // create the window and set up the context
