@@ -112,6 +112,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        create and display the main program window.
 //
 
+extern HWND g_window;
 extern HINSTANCE g_hInstance;
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
@@ -125,9 +126,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
-
+   SetWindowText(
+	   hWnd,
+	   "QUAKE3"
+   );
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
+
+   g_window = hWnd;
 
    return TRUE;
 }

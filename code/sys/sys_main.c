@@ -524,11 +524,31 @@ main
 =================
 */
 
+HINSTANCE g_hInstance;
+
+#ifndef WIN32
 int main( int argc, char **argv )
 {
    //bcm_host_init();
    return mymain(argc, argv);
 }
+#else
+int CALLBACK WinMain(
+_In_ HINSTANCE hInstance,
+_In_ HINSTANCE hPrevInstance,
+_In_ LPSTR     lpCmdLine,
+_In_ int       nCmdShow
+)
+{
+	g_hInstance = hInstance;
+	char currDir[MAX_PATH];
+	char* str = currDir;
+	char** strstr = &str;
+	GetCurrentDirectory(MAX_PATH, currDir);
+
+	return mymain(1, strstr);
+}
+#endif
 
 
 int mymain( int argc, char **argv )

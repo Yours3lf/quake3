@@ -440,6 +440,8 @@ static void SetViewportAndScissor( void ) {
 		backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 }
 
+extern void GLimp_makeCurrent();
+
 /*
 =================
 RB_BeginDrawingView
@@ -467,6 +469,9 @@ void RB_BeginDrawingView (void) {
 	//
 	// set the modelview matrix for the viewer
 	//
+
+	qglClearColor(0.8f, 0.7f, 0.4f, 1.0f);
+
 	SetViewportAndScissor();
 
 	// ensures that depth writes are enabled for the depth clear
@@ -1302,6 +1307,8 @@ void RB_RenderThread( void ) {
 		if ( !data ) {
 			return;	// all done, renderer is shutting down
 		}
+
+		GLimp_makeCurrent();
 
 		renderThreadActive = qtrue;
 

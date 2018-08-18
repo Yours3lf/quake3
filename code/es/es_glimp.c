@@ -40,9 +40,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../client/client.h"
 #include "../sys/sys_local.h"
 
+#ifndef WIN32
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 static Display *x_display = NULL;
+#else
+#include <Windows.h>
+#endif
 
 typedef enum
 {
@@ -235,6 +239,13 @@ void GLimp_LogComment( char *comment )
 {
 }
 
+#ifdef WIN32
+HWND g_window;
+HDC g_hdc;
+#else
+EGLNativeWindowType g_window;
+#endif
+
 /*
 ===============
 GLimp_StartDriverAndSetMode
@@ -245,6 +256,11 @@ static EGLDisplay   g_EGLDisplay;
 static EGLConfig    g_EGLConfig;
 static EGLContext   g_EGLContext;
 static EGLSurface   g_EGLWindowSurface;
+
+void GLimp_makeCurrent()
+{
+	eglMakeCurrent(g_EGLDisplay, g_EGLWindowSurface, g_EGLWindowSurface, g_EGLContext);
+}
 
 static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, NativeWindowType hWnd )
 {
@@ -262,6 +278,7 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, Nati
       EGL_SURFACE_TYPE,   EGL_WINDOW_BIT,
       EGL_SAMPLE_BUFFERS, 0,
       EGL_MIN_SWAP_INTERVAL, 0,
+	  EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
       EGL_NONE
    };
 
@@ -292,7 +309,11 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, Nati
    }
 #endif
 
+#ifndef WIN32
    g_EGLDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+#else
+   g_EGLDisplay = eglGetDisplay(g_hdc);
+#endif
    if (g_EGLDisplay == EGL_NO_DISPLAY) {
       ri.Printf(PRINT_ALL, "eglGetDisplay() failed\n");
       return qfalse;
@@ -302,6 +323,13 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, Nati
       ri.Printf(PRINT_ALL, "eglInitialize() failed\n");
       return qfalse;
    }
+   if (!eglBindAPI(EGL_OPENGL_ES_API))
+   {
+	   ri.Printf(PRINT_ALL, "eglBindAPI() failed\n");
+	   return qfalse;
+   }
+
+
    //if (!eglSaneChooseConfigBRCM(g_EGLDisplay, s_configAttribs, &g_EGLConfig, 1, &numConfigs)) {
    if (!eglChooseConfig(g_EGLDisplay, s_configAttribs, &g_EGLConfig, 1, &numConfigs)) {
       ri.Printf(PRINT_ALL, "eglSaneChooseConfigBRCM() failed\n");
@@ -327,7 +355,9 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, Nati
          (int)g_EGLConfig, r, g, b, a, depth, stencil, samples, sample_buffers);
    }
 
-   g_EGLContext = eglCreateContext(g_EGLDisplay, g_EGLConfig, NULL, NULL);
+   EGLint contextAttributes[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
+
+   g_EGLContext = eglCreateContext(g_EGLDisplay, g_EGLConfig, NULL, contextAttributes);
    if (g_EGLContext == EGL_NO_CONTEXT) {
       ri.Printf(PRINT_ALL, "eglCreateContext() failed\n");
       return qfalse;
@@ -341,7 +371,7 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, Nati
       return qfalse;
    }
 
-   eglMakeCurrent(g_EGLDisplay, g_EGLWindowSurface, g_EGLWindowSurface, g_EGLContext);
+   GLimp_makeCurrent();
 
    {
       EGLint width, height, color, depth, stencil;
@@ -444,6 +474,7 @@ static void GLimp_InitExtensions( void )
    textureFilterAnisotropic = qfalse;
 }
 
+#ifndef WIN32
 EGLNativeWindowType createXWindow(unsigned width, unsigned height)
 {
 	Window root;
@@ -504,6 +535,7 @@ EGLNativeWindowType createXWindow(unsigned width, unsigned height)
 
 	return (EGLNativeWindowType) win;
 }
+#endif
 
 /*
 ===============
@@ -519,11 +551,17 @@ void GLimp_Init( void )
 
    Sys_GLimpInit( );
 
-	EGLNativeWindowType window = createXWindow(512, 512);
+#ifndef WIN32
+   g_window = createXWindow(512, 512);
+#else
+   IN_Init();
+
+   g_hdc = GetDC(g_window);
+#endif
 
    // create the window and set up the context
    if( !GLimp_StartDriverAndSetMode( r_mode->integer, r_fullscreen->integer,
-      (NativeWindowType)window))
+      (NativeWindowType)g_window))
    {
       success = qfalse;
    }
@@ -550,7 +588,9 @@ void GLimp_Init( void )
    ri.Cvar_Get( "r_availableModes", "", CVAR_ROM );
 
    // This depends on SDL_INIT_VIDEO, hence having it here
+#ifndef WIN32
    IN_Init( );
+#endif
 }
 
 
