@@ -928,7 +928,9 @@ void S_Base_RawSamples( int stream, int samples, int rate, int width, int s_chan
 	int		intVolume;
 	portable_samplepair_t *rawsamples;
 
+#ifdef WIN32
 	return;
+#endif
 
 	if ( !s_soundStarted || s_soundMuted ) {
 		return;
@@ -1173,7 +1175,9 @@ void S_GetSoundtime(void)
 	static	int		oldsamplepos;
 	int		fullsamples;
 
+#ifdef WIN32
 	return;
+#endif
 
 	fullsamples = dma.samples / dma.channels;
 
