@@ -13,6 +13,7 @@
 #define qglUniformMatrix4fv glUniformMatrix4fv
 #define qglGetUniformLocation glGetUniformLocation
 #define qglUniform1i glUniform1i
+#define qglGetUniformfv	glGetUniformfv
 //glUniform
 
 #define GL_MODULATE                       0x2100
@@ -30,6 +31,8 @@ extern int PROJECTION_LOC;
 extern int USE_MULTITEXTURING_LOC;
 extern int MULTITEXTURE_MODE_LOC;
 extern int ALPHATEST_MODE_LOC;
+extern int USE_VERTEX_COLOR_LOC;
+extern GLuint UBER_PROGRAM;
 
 static float identity[16] =
 {
@@ -47,14 +50,14 @@ static void getOrtho(float* in,
 	float _near,
 	float _far)
 {
-	float tx = (right + left) / (right - left);
-	float ty = (top + bottom) / (top - bottom);
-	float tz = (_far + _near) / (_far - _near);
+	float tx = -(right + left) / (right - left);
+	float ty = -(top + bottom) / (top - bottom);
+	float tz = -(_far + _near) / (_far - _near);
 	float mx[16] = {
-		2.0f / (right - left), 0, 0, tx,
-		0, 2.0f / (top - bottom), 0, ty,
-		0, 0, -2.0f / (_far - _near), tz,
-		0, 0, 0, 1
+		2.0f / (right - left), 0, 0, 0,
+		0, 2.0f / (top - bottom), 0, 0,
+		0, 0, -2.0f / (_far - _near), 0,
+		tx, ty, tz, 1
 	};
 	memcpy(in, mx, sizeof(float) * 16);
 }
