@@ -72,11 +72,7 @@ static cvar_t *in_joystickNo        = NULL;
 
 #define CTRL(a) ((a)-'a'+1)
 
-/*
-===============
-IN_PrintKey
-===============
-*/
+
 static void IN_PrintKey( const SDL_keysym *keysym, keyNum_t key, qboolean down )
 {
 	if( down )
@@ -115,11 +111,6 @@ static void IN_PrintKey( const SDL_keysym *keysym, keyNum_t key, qboolean down )
 
 #define MAX_CONSOLE_KEYS 16
 
-/*
-===============
-IN_IsConsoleKey
-===============
-*/
 static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 {
 	typedef struct consoleKey_s
@@ -206,11 +197,6 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 	return qfalse;
 }
 
-/*
-===============
-IN_TranslateSDLToQ3Key
-===============
-*/
 static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 	keyNum_t *key, qboolean down )
 {
@@ -361,11 +347,6 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 }
 
 #ifdef MACOS_X_ACCELERATION_HACK
-/*
-===============
-IN_GetIOHandle
-===============
-*/
 static io_connect_t IN_GetIOHandle(void) // mac os x mouse accel hack
 {
 	io_connect_t iohandle = MACH_PORT_NULL;
@@ -388,11 +369,7 @@ static io_connect_t IN_GetIOHandle(void) // mac os x mouse accel hack
 }
 #endif
 
-/*
-===============
-IN_GobbleMotionEvents
-===============
-*/
+
 static void IN_GobbleMotionEvents( void )
 {
 	SDL_Event dummy[ 1 ];
@@ -403,11 +380,6 @@ static void IN_GobbleMotionEvents( void )
 		SDL_EVENTMASK( SDL_MOUSEMOTION ) ) ) { }
 }
 
-/*
-===============
-IN_ActivateMouse
-===============
-*/
 static void IN_ActivateMouse( void )
 {
 	if (!mouseAvailable || !SDL_WasInit( SDL_INIT_VIDEO ) )
@@ -479,11 +451,6 @@ static void IN_ActivateMouse( void )
 	mouseActive = qtrue;
 }
 
-/*
-===============
-IN_DeactivateMouse
-===============
-*/
 static void IN_DeactivateMouse( void )
 {
 	if( !SDL_WasInit( SDL_INIT_VIDEO ) )
@@ -565,11 +532,6 @@ struct
 } stick_state;
 
 
-/*
-===============
-IN_InitJoystick
-===============
-*/
 static void IN_InitJoystick( void )
 {
 	int i = 0;
@@ -623,11 +585,6 @@ static void IN_InitJoystick( void )
 	SDL_JoystickEventState(SDL_QUERY);
 }
 
-/*
-===============
-IN_ShutdownJoystick
-===============
-*/
 static void IN_ShutdownJoystick( void )
 {
 	if (stick)
@@ -639,11 +596,6 @@ static void IN_ShutdownJoystick( void )
 	SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 }
 
-/*
-===============
-IN_JoyMove
-===============
-*/
 static void IN_JoyMove( void )
 {
 	qboolean joy_pressed[ARRAYLEN(joy_keys)];
@@ -808,7 +760,7 @@ static void IN_JoyMove( void )
 		}
 	}
 
-	/* Time to update axes state based on old vs. new. */
+	// Time to update axes state based on old vs. new. 
 	if (axes != stick_state.oldaxes)
 	{
 		for( i = 0; i < 16; i++ ) {
@@ -822,15 +774,10 @@ static void IN_JoyMove( void )
 		}
 	}
 
-	/* Save for future generations. */
+	// Save for future generations.
 	stick_state.oldaxes = axes;
 }
 
-/*
-===============
-IN_ProcessEvents
-===============
-*/
 static void IN_ProcessEvents( void )
 {
 	SDL_Event e;
@@ -851,6 +798,8 @@ static void IN_ProcessEvents( void )
 			SDL_DEFAULT_REPEAT_INTERVAL );
 		keyRepeatEnabled = qtrue;
 	}
+
+	//Com_Printf("SDL handling input");
 
 	while( SDL_PollEvent( &e ) )
 	{
@@ -907,11 +856,6 @@ static void IN_ProcessEvents( void )
 	}
 }
 
-/*
-===============
-IN_Frame
-===============
-*/
 void IN_Frame( void )
 {
 	qboolean loading;
@@ -925,27 +869,22 @@ void IN_Frame( void )
 	if( !r_fullscreen->integer && ( Key_GetCatcher( ) & KEYCATCH_CONSOLE ) )
 	{
 		// Console is down in windowed mode
-		IN_DeactivateMouse( );
+		//IN_DeactivateMouse( );
 	}
 	else if( !r_fullscreen->integer && loading )
 	{
 		// Loading in windowed mode
-		IN_DeactivateMouse( );
+		//IN_DeactivateMouse( );
 	}
 	else if( !( SDL_GetAppState() & SDL_APPINPUTFOCUS ) )
 	{
 		// Window not got focus
-		IN_DeactivateMouse( );
+		//IN_DeactivateMouse( );
 	}
 	else
 		IN_ActivateMouse( );
 }
 
-/*
-===============
-IN_Init
-===============
-*/
 void IN_Init( void )
 {
 	if( !SDL_WasInit( SDL_INIT_VIDEO ) )
@@ -954,7 +893,7 @@ void IN_Init( void )
 		return;
 	}
 
-	Com_DPrintf( "\n------- Input Initialization -------\n" );
+	Com_Printf( "\n------- Input Initialization -------\n" );
 
 	in_keyboardDebug = Cvar_Get( "in_keyboardDebug", "0", CVAR_ARCHIVE );
 
@@ -981,19 +920,14 @@ void IN_Init( void )
 	}
 	else
 	{
-		IN_DeactivateMouse( );
+		//IN_DeactivateMouse( );
 		mouseAvailable = qfalse;
 	}
 
 	IN_InitJoystick( );
-	Com_DPrintf( "------------------------------------\n" );
+	Com_Printf( "------------------------------------\n" );
 }
 
-/*
-===============
-IN_Shutdown
-===============
-*/
 void IN_Shutdown( void )
 {
 	IN_DeactivateMouse( );
@@ -1002,11 +936,6 @@ void IN_Shutdown( void )
 	IN_ShutdownJoystick( );
 }
 
-/*
-===============
-IN_Restart
-===============
-*/
 void IN_Restart( void )
 {
 	IN_ShutdownJoystick( );

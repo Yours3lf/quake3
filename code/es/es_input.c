@@ -301,11 +301,7 @@ void nonblock(int state)
 	tcsetattr(STDIN_FILENO, TCSANOW, &ttystate);
 }
 
-/*
-===============
-IN_TranslateSDLToQ3Key
-===============
-*/
+
 static keyNum_t IN_TranslateCharToQ3Key( char c )
 {
    switch (c) {
@@ -320,11 +316,7 @@ static keyNum_t IN_TranslateCharToQ3Key( char c )
    return c;
 }
 
-/*
-===============
-IN_ProcessEvents
-===============
-*/
+
 static void IN_ProcessEvents( void )
 {
 	while (kbhit()) {
@@ -341,11 +333,7 @@ static void IN_ProcessEvents( void )
 	}
 }
 
-/*
-===============
-IN_Init
-===============
-*/
+
 void IN_Init( void )
 {
 	nonblock(NB_ENABLE);
@@ -353,30 +341,15 @@ void IN_Init( void )
 
 #endif
 
-/*
-===============
-IN_Frame
-===============
-*/
 void IN_Frame( void )
 {
 	IN_ProcessEvents( );
 }
-
-/*
-===============
-IN_Shutdown
-===============
-*/
+#error hello
 void IN_Shutdown( void )
 {
 }
 
-/*
-===============
-IN_Restart
-===============
-*/
 void IN_Restart( void )
 {
 }

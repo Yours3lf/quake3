@@ -25,52 +25,26 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../qcommon/q_shared.h"
 #include "../client/snd_local.h"
-
 /*
-===============
-SNDDMA_Init
-===============
-*/
 qboolean SNDDMA_Init(void)
 {
 	return qtrue;
 }
 
-/*
-===============
-SNDDMA_GetDMAPos
-===============
-*/
 int SNDDMA_GetDMAPos(void)
 {
    return 0;
 }
 
-/*
-===============
-SNDDMA_Shutdown
-===============
-*/
 void SNDDMA_Shutdown(void)
 {
 }
 
-/*
-===============
-SNDDMA_Submit
-
-Send sound to device if buffer isn't really the dma buffer
-===============
-*/
 void SNDDMA_Submit(void)
 {
 }
 
-/*
-===============
-SNDDMA_BeginPainting
-===============
-*/
 void SNDDMA_BeginPainting (void)
 {
 }
+*/

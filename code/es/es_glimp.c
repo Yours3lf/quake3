@@ -301,10 +301,22 @@ static qboolean GLimp_StartDriverAndSetMode( int mode, qboolean fullscreen, Nati
       ri.Printf( PRINT_ALL, "SDL using driver \"%s\"\n", driverName );
       Cvar_Set( "r_sdlDriver", driverName );
 
-      //if (!SDL_SetVideoMode(32, 32, 0, 0)) {
+      //if (!SDL_SetVideoMode(1024, 768, 0, SDL_OPENGL)) {
       //   ri.Printf(PRINT_ALL, "SDL_SetVideoMode() failed (%s)\n", SDL_GetError());
       //   return qfalse;
       //}
+
+#ifndef WIN32
+	/*Display* d = XOpenDisplay(NULL);
+	int revert_to;
+	XGetInputFocus(d, &g_window, &revert_to);
+	hWnd = g_window;
+	XWindowChanges wc;
+	wc.width = 1024;
+	wc.height = 768;
+	XConfigureWindow(d, g_window, CWWidth | CWHeight, &wc);
+	XSync(d, False);*/
+#endif
    }
 #endif
 
@@ -556,7 +568,7 @@ void GLimp_Init( void )
    Sys_GLimpInit( );
 
 #ifndef WIN32
-   g_window = createXWindow(512, 512);
+   g_window = createXWindow(1024, 768);
 #else
    IN_Init();
 #endif
