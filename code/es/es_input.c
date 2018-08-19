@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <windowsx.h>
 
 /*
 ===============
@@ -191,6 +192,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
+	case WM_MOUSEMOVE:
+	{
+		static int currPosX = 0;
+		static int currPosY = 0;
+		int xPos = GET_X_LPARAM(lParam);
+		int yPos = GET_Y_LPARAM(lParam);
+		Com_QueueEvent(0, SE_MOUSE, xPos - currPosX, yPos - currPosY, 0, NULL);
+		currPosX = xPos;
+		currPosY = yPos;
+		break;
+	}
+	case WM_LBUTTONDOWN:
+		Com_QueueEvent(0, SE_KEY, K_MOUSE1, qtrue, 0, NULL);
+		break;
+	case WM_LBUTTONUP:
+		Com_QueueEvent(0, SE_KEY, K_MOUSE1, qfalse, 0, NULL);
+		break;
+	case WM_RBUTTONDOWN:
+		Com_QueueEvent(0, SE_KEY, K_MOUSE2, qtrue, 0, NULL);
+		break;
+	case WM_RBUTTONUP:
+		Com_QueueEvent(0, SE_KEY, K_MOUSE2, qfalse, 0, NULL);
+		break;
+	case WM_MOUSEWHEEL:
+	{
+		int zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+		Com_QueueEvent(0, SE_KEY, zDelta < 0 ? K_MWHEELDOWN : K_MWHEELUP, 0, 0, NULL);
+		break;
+	}
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
