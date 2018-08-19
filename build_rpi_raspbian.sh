@@ -5,9 +5,14 @@
 
 # directory containing the ARM shared libraries (rootfs, lib/ of SD card)
 # specifically libEGL.so and libGLESv2.so
-#ARM_LIBS="/opt/vc/lib"
+#GL_DRIVER_LIBS="/opt/vc/lib"
 GL_DRIVER_LIBS="/home/pi/prefix/lib"
 SDL_LIB=lib
+
+#LIBEGL=brcmEGL
+LIBEGL=EGL
+#LIBGLES=brcmGLESv2
+LIBGLES=GLESv2
 
 # directory containing baseq3/ containing .pk3 files - baseq3 on CD
 BASEQ3_DIR="/home/${USER}/"
@@ -18,7 +23,7 @@ BASEQ3_DIR="/home/${USER}/"
 
 ## rpi version
 INCLUDES="-I/home/pi/prefix/include"
-#INCLUDES="-I/home/pi/prefix/include"
+
 
 # prefix of arm cross compiler installed
 ## commented out for rpi
@@ -34,7 +39,7 @@ fi
 make -j4 -f Makefile COPYDIR="$BASEQ3_DIR" ARCH=arm \
 	CC=""$CROSS_COMPILE"gcc" USE_SVN=0 USE_CURL=0 USE_OPENAL=0 \
 	CFLAGS="-DVCMODS_MISC -DVCMODS_OPENGLES -DVCMODS_DEPTH -DVCMODS_REPLACETRIG $INCLUDES" \
-	LDFLAGS="-L"$GL_DRIVER_LIBS" -L$SDL_LIB -lSDL -lkhrn_static -lopenmaxil -lEGL -lGLESv2 -lrt -lX11 -lxcb -lxcb-dri2 -lxcb-dri3 -lxcb-sync -lxcb-present -lxcb-xfixes -lxshmfence -lXau -lX11-xcb -lXdmcp -lexpat"
+	LDFLAGS="-L"$GL_DRIVER_LIBS" -L$SDL_LIB -lSDL -lkhrn_static -lopenmaxil -l"$LIBEGL" -l"$LIBGLES" -lrt -lX11 -lxcb -lxcb-dri2 -lxcb-dri3 -lxcb-sync -lxcb-present -lxcb-xfixes -lxshmfence -lXau -lX11-xcb -lXdmcp -lexpat"
 
 # copy the required pak3 files over
 # cp "$BASEQ3_DIR"/baseq3/*.pk3 "build/release-linux-arm/baseq3/"
