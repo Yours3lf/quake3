@@ -3213,6 +3213,8 @@ void CL_Init( void ) {
 	Cvar_Get( "cl_guid", "", CVAR_USERINFO | CVAR_ROM );
 	CL_UpdateGUID( NULL, 0 );
 
+	Cmd_ExecuteString("demo FOUR.DM_68");
+
 	Com_Printf( "----- Client Initialization Complete -----\n" );
 }
 
