@@ -185,7 +185,7 @@ void GL_TexEnv( int env )
 {
 	if ( env == glState.texEnv[glState.currenttmu] )
 	{
-		return;
+		//return;
 	}
 
 	glState.texEnv[glState.currenttmu] = env;
