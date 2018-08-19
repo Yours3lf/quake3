@@ -1049,9 +1049,9 @@ GLuint CompileProgram(char* v, char* f, int mm, int am, int uc)
 	char amc[10];
 	char ucc[10];
 
-	itoa(mm, mmc, 10);
-	itoa(am, amc, 10);
-	itoa(uc, ucc, 10);
+	sprintf(mmc, "%d", mm);
+	sprintf(amc, "%d", am);
+	sprintf(ucc, "%d", uc);
 
 	strcat(vertbuffer, "#version 100\n");
 	strcat(vertbuffer, "#define MULTITEXTURING_MODE ");
