@@ -195,19 +195,23 @@ void GL_TexEnv( int env )
 	{
 	case GL_MODULATE:
 		//qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-		qglUniform1i(MULTITEXTURE_MODE_LOC, 0);
+		//qglUniform1i(MULTITEXTURE_MODE_LOC, 0);
+		MULTITEXTURING_MODE = MULTITEXTURE_MODULATE;
 		break;
 	case GL_REPLACE:
 		//qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-		qglUniform1i(MULTITEXTURE_MODE_LOC, 1);
+		//qglUniform1i(MULTITEXTURE_MODE_LOC, 1);
+		MULTITEXTURING_MODE = MULTITEXTURE_REPLACE;
 		break;
 	case GL_DECAL:
 		//qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
-		qglUniform1i(MULTITEXTURE_MODE_LOC, 2);
+		//qglUniform1i(MULTITEXTURE_MODE_LOC, 2);
+		MULTITEXTURING_MODE = MULTITEXTURE_DECAL;
 		break;
 	case GL_ADD:
 		//qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD );
-		qglUniform1i(MULTITEXTURE_MODE_LOC, 3);
+		//qglUniform1i(MULTITEXTURE_MODE_LOC, 3);
+		MULTITEXTURING_MODE = MULTITEXTURE_ADD;
 		break;
 	default:
 		ri.Error( ERR_DROP, "GL_TexEnv: invalid env '%d' passed\n", env );
@@ -386,22 +390,26 @@ void GL_State( unsigned long stateBits )
 		{
 		case 0:
 			//qglDisable( GL_ALPHA_TEST );
-			qglUniform1i(ALPHATEST_MODE_LOC, ALPHATEST_DISABLE);	
+			//qglUniform1i(ALPHATEST_MODE_LOC, ALPHATEST_DISABLE);	
+			ALPHATEST_MODE = NOALPHATEST;
 			break;
 		case GLS_ATEST_GT_0:
 			//qglEnable( GL_ALPHA_TEST );
 			//qglAlphaFunc( GL_GREATER, 0.0f );
-			qglUniform1i(ALPHATEST_MODE_LOC, ALPHATEST_GREATER);
+			//qglUniform1i(ALPHATEST_MODE_LOC, ALPHATEST_GREATER);
+			ALPHATEST_MODE = ALPHATEST_GREATER;
 			break;
 		case GLS_ATEST_LT_80:
 			//qglEnable( GL_ALPHA_TEST );
 			//qglAlphaFunc( GL_LESS, 0.5f );
-			qglUniform1i(ALPHATEST_MODE_LOC, ALPHATEST_LESS);
+			//qglUniform1i(ALPHATEST_MODE_LOC, ALPHATEST_LESS);
+			ALPHATEST_MODE = ALPHATEST_LESS;
 			break;
 		case GLS_ATEST_GE_80:
 			//qglEnable( GL_ALPHA_TEST );
 			//qglAlphaFunc( GL_GEQUAL, 0.5f );
-			qglUniform1i(ALPHATEST_MODE_LOC, ALPHATEST_GREATEREQUAL);
+			//qglUniform1i(ALPHATEST_MODE_LOC, ALPHATEST_GREATEREQUAL);
+			ALPHATEST_MODE = ALPHATEST_GREATEREQUAL;
 			break;
 		default:
 			assert( 0 );
@@ -439,7 +447,8 @@ static void RB_Hyperspace( void ) {
 static void SetViewportAndScissor( void ) {
 	//qglMatrixMode(GL_PROJECTION);
 	//qglLoadMatrixf( backEnd.viewParms.projectionMatrix );
-	qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, backEnd.viewParms.projectionMatrix);
+	//qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, backEnd.viewParms.projectionMatrix);
+	setProjection(backEnd.viewParms.projectionMatrix);
 	//qglMatrixMode(GL_MODELVIEW);
 
 	// set the window clipping
@@ -540,7 +549,8 @@ void RB_BeginDrawingView (void) {
 		plane2[3] = DotProduct (plane, backEnd.viewParms.or.origin) - plane[3];
 
 		//qglLoadMatrixf( s_flipMatrix );
-		qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, s_flipMatrix);
+		//qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, s_flipMatrix);
+		setModelview(s_flipMatrix);
 		//qglClipPlane (GL_CLIP_PLANE0, plane2);
 		//qglEnable (GL_CLIP_PLANE0);
 	} else {
@@ -650,7 +660,8 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 			}
 
 			//qglLoadMatrixf( backEnd.or.modelMatrix );
-			qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, backEnd.or.modelMatrix);
+			//qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, backEnd.or.modelMatrix);
+			setModelview(backEnd. or .modelMatrix);
 
 			//
 			// change depthrange. Also change projection matrix so first person weapon does not look like coming
@@ -669,7 +680,8 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 								// was not a crosshair but now is, change back proj matrix
 								//qglMatrixMode(GL_PROJECTION);
 								//qglLoadMatrixf(backEnd.viewParms.projectionMatrix);
-								qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, backEnd.viewParms.projectionMatrix);
+								//qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, backEnd.viewParms.projectionMatrix);
+								setProjection(backEnd.viewParms.projectionMatrix);
 								//qglMatrixMode(GL_MODELVIEW);
 							}
 						}
@@ -681,7 +693,8 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 
 							//qglMatrixMode(GL_PROJECTION);
 							//qglLoadMatrixf(temp.projectionMatrix);
-							qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, temp.projectionMatrix);
+							//qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, temp.projectionMatrix);
+							setProjection(temp.projectionMatrix);
 							//qglMatrixMode(GL_MODELVIEW);
 						}
 					}
@@ -699,7 +712,8 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 					{
 						//qglMatrixMode(GL_PROJECTION);
 						//qglLoadMatrixf(backEnd.viewParms.projectionMatrix);
-						qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, backEnd.viewParms.projectionMatrix);
+						//qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, backEnd.viewParms.projectionMatrix);
+						setProjection(backEnd.viewParms.projectionMatrix);
 						//qglMatrixMode(GL_MODELVIEW);
 					}
 
@@ -730,7 +744,8 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 
 	// go back to the world modelview matrix
 	//qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
-	qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, backEnd.viewParms.world.modelMatrix);
+	//qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, backEnd.viewParms.world.modelMatrix);
+	setModelview(backEnd.viewParms.world.modelMatrix);
 	if ( depthRange ) {
 #ifdef VCMODS_OPENGLES
 		qglDepthRange (0, 1.0f);
@@ -775,18 +790,21 @@ void	RB_SetGL2D (void) {
 
 	//qglMatrixMode(GL_PROJECTION);
     //qglLoadIdentity ();
-	qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, identity);
+	//qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, identity);
+	setProjection(IDENTITY);
 #ifdef VCMODS_OPENGLES
 	//qglOrtho (0.0f, glConfig.vidWidth, glConfig.vidHeight, 0.0f, 0.0f, 1.0f);
 	float ortho[16];
 	getOrtho(ortho, 0.0f, glConfig.vidWidth, glConfig.vidHeight, 0.0f, 0.0f, 1.0f);
-	qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, ortho);
+	//qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, ortho);
+	setProjection(ortho);
 #else
 	qglOrtho (0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1);
 #endif
 	//qglMatrixMode(GL_MODELVIEW);
     //qglLoadIdentity ();
-	qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, identity);
+	//qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, identity);
+	setModelview(IDENTITY);
 
 	GL_State( GLS_DEPTHTEST_DISABLE |
 			  GLS_SRCBLEND_SRC_ALPHA |
@@ -896,6 +914,9 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 	qglVertexAttribPointer(1, 2, GL_FLOAT, 0, 0, texcoords);
 	qglEnableVertexAttribArray(0);
 	qglVertexAttribPointer(0, 2, GL_FLOAT, 0, 0, verts);
+	qglUseProgram(PROGRAMS[MULTITEXTURING_MODE][ALPHATEST_MODE][USE_VERTEXCOLOR]);
+	getMVP(UNIFORM_MVP);
+	qglUniformMatrix4fv(MVP_LOC, 1, 0, UNIFORM_MVP);
 	qglDrawElements( GL_TRIANGLE_STRIP, 6, GL_INDEX_TYPE, indicies );
 	//qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
 #else
@@ -1145,6 +1166,9 @@ void RB_ShowImages( void ) {
 		qglVertexAttribPointer(1, 2, GL_FLOAT, 0, 0, texcoords);
 		qglEnableVertexAttribArray(0);
 		qglVertexAttribPointer(0, 2, GL_FLOAT, 0, 0, verts);
+		qglUseProgram(PROGRAMS[MULTITEXTURING_MODE][ALPHATEST_MODE][USE_VERTEXCOLOR]);
+		getMVP(UNIFORM_MVP);
+		qglUniformMatrix4fv(MVP_LOC, 1, 0, UNIFORM_MVP);
 		qglDrawElements( GL_TRIANGLE_STRIP, 6, GL_INDEX_TYPE, indicies );
 #else
 		GL_Bind( image );

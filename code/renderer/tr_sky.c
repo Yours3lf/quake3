@@ -402,7 +402,8 @@ static void DrawSkySide( struct image_s *image, const int mins[2], const int max
 	}
 #ifdef VCMODS_OPENGLES	
 	//qglDisableClientState( GL_COLOR_ARRAY);
-	qglUniform1i(USE_VERTEX_COLOR_LOC, 0);
+	//qglUniform1i(USE_VERTEX_COLOR_LOC, 0);
+	USE_VERTEXCOLOR = 0;
 	//qglEnableClientState( GL_TEXTURE_COORD_ARRAY);
 	//qglTexCoordPointer( 2, GL_FLOAT, 0, s_skyTexCoords );
 	qglEnableVertexAttribArray(1);
@@ -410,6 +411,9 @@ static void DrawSkySide( struct image_s *image, const int mins[2], const int max
 	//qglVertexPointer  ( 3, GL_FLOAT, 0, s_skyPoints );
 	qglEnableVertexAttribArray(0);
 	qglVertexAttribPointer(0, 3, GL_FLOAT, 0, 0, s_skyPoints);
+	qglUseProgram(PROGRAMS[MULTITEXTURING_MODE][ALPHATEST_MODE][USE_VERTEXCOLOR]);
+	getMVP(UNIFORM_MVP);
+	qglUniformMatrix4fv(MVP_LOC, 1, 0, UNIFORM_MVP);
 	qglDrawElements( GL_TRIANGLE_STRIP, i, GL_INDEX_TYPE, indicies );
 	Hunk_FreeTempMemory(indicies);
 #endif
@@ -752,7 +756,8 @@ void RB_DrawSun( void ) {
 	//qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
 	//qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, backEnd.viewParms.world.modelMatrix);
 	//qglTranslatef (backEnd.viewParms.or.origin[0], backEnd.viewParms.or.origin[1], backEnd.viewParms.or.origin[2]);
-	qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, model);
+	//qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, model);
+	setModelview(model);
 
 	dist = 	backEnd.viewParms.zFar / 1.75;		// div sqrt(3)
 	size = dist * 0.4;
@@ -869,7 +874,8 @@ void RB_StageIteratorSky( void ) {
 #endif
 
 		float modelview[16];
-		qglGetUniformfv(UBER_PROGRAM, MODELVIEW_LOC, modelview);
+		//qglGetUniformfv(UBER_PROGRAM, MODELVIEW_LOC, modelview);
+		getModelview(modelview);
 		//qglPushMatrix ();
 		GL_State( 0 );
 		//qglTranslatef (backEnd.viewParms.or.origin[0], backEnd.viewParms.or.origin[1], backEnd.viewParms.or.origin[2]);
@@ -878,12 +884,14 @@ void RB_StageIteratorSky( void ) {
 		 0, 1, 0, backEnd.viewParms.or.origin[1],
 		 0, 0, 1, backEnd.viewParms.or.origin[2],
 		 0, 0, 0, 1};
-		qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, model);
+		//qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, model);
+		setModelview(model);
 
 		DrawSkyBox( tess.shader );
 
 		//qglPopMatrix();
-		qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, modelview);
+		//qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, modelview);
+		setModelview(modelview);
 	}
 
 	// generate the vertexes for all the clouds, which will be drawn

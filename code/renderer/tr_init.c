@@ -1028,13 +1028,71 @@ void R_Register( void )
 
 #define STRINGIFY(s) #s
 
-int MODELVIEW_LOC;
-int PROJECTION_LOC;
-int USE_MULTITEXTURING_LOC;
-int MULTITEXTURE_MODE_LOC;
-int ALPHATEST_MODE_LOC;
-int USE_VERTEX_COLOR_LOC;
-GLuint UBER_PROGRAM;
+float UNIFORM_MODELVIEW[16];
+float UNIFORM_PROJECTION[16];
+float UNIFORM_MVP[16];
+int MULTITEXTURING_MODE = NOMULTITEXTURE;
+int ALPHATEST_MODE = NOALPHATEST;
+int USE_VERTEXCOLOR = 0;
+int MVP_LOC;
+GLuint PROGRAMS[5][4][2];
+
+GLuint CompileProgram(char* v, char* f, int mm, int am, int uc)
+{
+	char* vertbuffer = malloc(4096);
+	char* fragbuffer = malloc(4096);
+
+	vertbuffer[0] = '\0';
+	fragbuffer[0] = '\0';
+
+	char mmc[10];
+	char amc[10];
+	char ucc[10];
+
+	itoa(mm, mmc, 10);
+	itoa(am, amc, 10);
+	itoa(uc, ucc, 10);
+
+	strcat(vertbuffer, "#version 100\n");
+	strcat(vertbuffer, "#define MULTITEXTURING_MODE ");
+	strcat(vertbuffer, mmc);
+	strcat(vertbuffer, "\n#define ALPHATEST_MODE ");
+	strcat(vertbuffer, amc);
+	strcat(vertbuffer, "\n#define USEVERTEXCOLOR ");
+	strcat(vertbuffer, ucc);
+	strcat(vertbuffer, "\n");
+	strcat(vertbuffer, v);
+
+	strcat(fragbuffer, "#version 100\n");
+	strcat(fragbuffer, "#define MULTITEXTURING_MODE ");
+	strcat(fragbuffer, mmc);
+	strcat(fragbuffer, "\n#define ALPHATEST_MODE ");
+	strcat(fragbuffer, amc);
+	strcat(fragbuffer, "\n#define USEVERTEXCOLOR ");
+	strcat(fragbuffer, ucc);
+	strcat(fragbuffer, "\n");
+	strcat(fragbuffer, f);
+
+	GLuint program = qglCreateProgram();
+	GLuint vertex_shader = qglCreateShader(GL_VERTEX_SHADER);
+	GLuint fragment_shader = qglCreateShader(GL_FRAGMENT_SHADER);
+	qglShaderSource(vertex_shader, 1, &vertbuffer, 0);
+	qglShaderSource(fragment_shader, 1, &fragbuffer, 0);
+	qglCompileShader(vertex_shader);
+	qglCompileShader(fragment_shader);
+	qglAttachShader(program, vertex_shader);
+	qglAttachShader(program, fragment_shader);
+	qglLinkProgram(program);
+	qglUseProgram(program);
+	MVP_LOC = qglGetUniformLocation(program, "mvp");
+	qglUniform1i(qglGetUniformLocation(program, "tex0"), 0);
+	qglUniform1i(qglGetUniformLocation(program, "tex1"), 1);
+
+	free(vertbuffer);
+	free(fragbuffer);
+
+	return program;
+}
 
 void LoadUberShader()
 {
@@ -1062,26 +1120,22 @@ void LoadUberShader()
 		frag_shader[size] = '\0';
 	}
 
-	UBER_PROGRAM = qglCreateProgram();
-	GLuint vertex_shader = qglCreateShader(GL_VERTEX_SHADER);
-	GLuint fragment_shader = qglCreateShader(GL_FRAGMENT_SHADER);
-	qglShaderSource(vertex_shader, 1, &vert_shader, 0);
-	qglShaderSource(fragment_shader, 1, &frag_shader, 0);
-	qglCompileShader(vertex_shader);
-	qglCompileShader(fragment_shader);
-	qglAttachShader(UBER_PROGRAM, vertex_shader);
-	qglAttachShader(UBER_PROGRAM, fragment_shader);
-	qglLinkProgram(UBER_PROGRAM);
-	qglUseProgram(UBER_PROGRAM);
-	MODELVIEW_LOC = qglGetUniformLocation(UBER_PROGRAM, "modelview");
-	PROJECTION_LOC = qglGetUniformLocation(UBER_PROGRAM, "projection");
-	USE_MULTITEXTURING_LOC = qglGetUniformLocation(UBER_PROGRAM, "use_multitexturing");
-	MULTITEXTURE_MODE_LOC = qglGetUniformLocation(UBER_PROGRAM, "multitexture_mode");
-	ALPHATEST_MODE_LOC = qglGetUniformLocation(UBER_PROGRAM, "alphatest_mode");
-	USE_VERTEX_COLOR_LOC = qglGetUniformLocation(UBER_PROGRAM, "use_vertex_color");
-	qglUniform1i(qglGetUniformLocation(UBER_PROGRAM, "tex0"), 0);
-	qglUniform1i(qglGetUniformLocation(UBER_PROGRAM, "tex1"), 1);
-	qglUniform1i(USE_VERTEX_COLOR_LOC, 0);
+	for (int c = 0; c < 5; ++c)
+	{
+		for (int d = 0; d < 4; ++d)
+		{
+			for (int e = 0; e < 2; ++e)
+			{
+				PROGRAMS[c][d][e] = CompileProgram(vert_shader, frag_shader, c, d, e);
+			}
+		}
+	}
+
+	setModelview(IDENTITY);
+	setProjection(IDENTITY);
+
+	free(vert_shader);
+	free(frag_shader);
 }
 
 /*

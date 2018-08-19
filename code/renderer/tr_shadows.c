@@ -134,6 +134,9 @@ void R_RenderShadowEdges( void ) {
 				//qglVertexPointer( 3, GL_FLOAT, 16, tess.xyz );
 				qglEnableVertexAttribArray(0);
 				qglVertexAttribPointer(0, 3, GL_FLOAT, 0, 16, tess.xyz);
+				qglUseProgram(PROGRAMS[MULTITEXTURING_MODE][ALPHATEST_MODE][USE_VERTEXCOLOR]);
+				getMVP(UNIFORM_MVP);
+				qglUniformMatrix4fv(MVP_LOC, 1, 0, UNIFORM_MVP);
 				qglDrawElements( GL_TRIANGLE_STRIP, 4, GL_INDEX_TYPE, indicies );
 #else
 				qglBegin( GL_TRIANGLE_STRIP );
@@ -324,6 +327,9 @@ void RB_ShadowFinish( void ) {
 	//qglVertexPointer ( 3, GL_FLOAT, 0, quad );
 	qglEnableVertexAttribArray(0);
 	qglVertexAttribPointer(0, 3, GL_FLOAT, 0, 0, quad);
+	qglUseProgram(PROGRAMS[MULTITEXTURING_MODE][ALPHATEST_MODE][USE_VERTEXCOLOR]);
+	getMVP(UNIFORM_MVP);
+	qglUniformMatrix4fv(MVP_LOC, 1, 0, UNIFORM_MVP);
 	qglDrawElements ( GL_TRIANGLE_STRIP, 6, GL_INDEX_TYPE, indicies );
 #else
 	qglBegin( GL_QUADS );

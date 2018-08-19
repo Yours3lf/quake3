@@ -1200,14 +1200,17 @@ void RB_SurfaceAxis( void ) {
 	qglLineWidth( 3 );
 #ifdef VCMODS_OPENGLES
 	//qglEnableClientState( GL_COLOR_ARRAY );
-	qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+	//qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+	USE_VERTEXCOLOR = 1;
 	//qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, colors );
 	qglEnableVertexAttribArray(3);
 	qglVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, 0, 0, colors);
 	//qglVertexPointer( 3, GL_FLOAT, 0, verts );
 	qglEnableVertexAttribArray(0);
 	qglVertexAttribPointer(0, 3, GL_FLOAT, 0, 0, verts);
-
+	qglUseProgram(PROGRAMS[MULTITEXTURING_MODE][ALPHATEST_MODE][USE_VERTEXCOLOR]);
+	getMVP(UNIFORM_MVP);
+	qglUniformMatrix4fv(MVP_LOC, 1, 0, UNIFORM_MVP);
 	qglDrawElements( GL_LINES, 6, GL_INDEX_TYPE, indicies );
 #else
 	qglBegin( GL_LINES );

@@ -509,20 +509,25 @@ void RB_RenderFlares (void) {
 
 	float modelview[16];
 	float projection[16];
-	qglGetUniformfv(UBER_PROGRAM, MODELVIEW_LOC, modelview);
-	qglGetUniformfv(UBER_PROGRAM, PROJECTION_LOC, projection);
+	//qglGetUniformfv(UBER_PROGRAM, MODELVIEW_LOC, modelview);
+	//qglGetUniformfv(UBER_PROGRAM, PROJECTION_LOC, projection);
+	getModelview(modelview);
+	getProjection(projection);
 	//qglPushMatrix();
     //qglLoadIdentity();
-	qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, identity);
+	//qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, identity);
+	setModelview(IDENTITY);
 	//qglMatrixMode( GL_PROJECTION );
 	//qglPushMatrix();
     //qglLoadIdentity();
-	qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, identity);
+	//qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, identity);
+	setProjection(IDENTITY);
 	float ortho[16];
 	getOrtho(ortho, backEnd.viewParms.viewportX, backEnd.viewParms.viewportX + backEnd.viewParms.viewportWidth,
 				  backEnd.viewParms.viewportY, backEnd.viewParms.viewportY + backEnd.viewParms.viewportHeight,
 				  -99999, 99999);
-	qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, ortho);
+	//qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, ortho);
+	setProjection(ortho);
 	//qglOrtho( backEnd.viewParms.viewportX, backEnd.viewParms.viewportX + backEnd.viewParms.viewportWidth,
 	//		  backEnd.viewParms.viewportY, backEnd.viewParms.viewportY + backEnd.viewParms.viewportHeight,
 	//		  -99999, 99999 );
@@ -538,7 +543,9 @@ void RB_RenderFlares (void) {
 	//qglPopMatrix();
 	//qglMatrixMode( GL_MODELVIEW );
 	//qglPopMatrix();
-	qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, projection);
-	qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, modelview);
+	//qglUniformMatrix4fv(PROJECTION_LOC, 1, 0, projection);
+	//qglUniformMatrix4fv(MODELVIEW_LOC, 1, 0, modelview);
+	setProjection(projection);
+	setModelview(modelview);
 }
 

@@ -1,8 +1,6 @@
-#version 100
 precision highp float;
 
-uniform mat4 projection;
-uniform mat4 modelview;
+uniform mat4 mvp; // projection * modelview
 
 attribute vec4 inVertex;
 attribute vec2 inTexcoord0;
@@ -18,5 +16,5 @@ void main()
 	texcoord0 = inTexcoord0;
 	texcoord1 = inTexcoord1;
 	color = inColor;
-	gl_Position = projection * modelview * vec4(inVertex.xyz, 1.0);
+	gl_Position = mvp * vec4(inVertex.xyz, 1.0);
 }

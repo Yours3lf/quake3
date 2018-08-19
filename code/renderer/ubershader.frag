@@ -1,23 +1,30 @@
-#version 100
 precision highp float;
 
 uniform sampler2D tex0;
 uniform sampler2D tex1;
 
-#define MODULATE 0
-#define REPLACE 1
-#define DECAL 2
-#define ADD 3
+#define NOMULTITEXTURE 0
+#define MULTITEXTURE_MODULATE 1
+#define MULTITEXTURE_REPLACE 2
+#define MULTITEXTURE_DECAL 3
+#define MULTITEXTURE_ADD 4
 
-#define ALPHATEST_DISABLE 0
+#define NOALPHATEST 0
 #define ALPHATEST_GREATER 1
 #define ALPHATEST_LESS 2
 #define ALPHATEST_GREATEREQUAL 3
 
-uniform int use_multitexturing;
-uniform int multitexture_mode;
-uniform int alphatest_mode;
-uniform int use_vertex_color;
+#ifndef MULTITEXTURING_MODE
+#define MULTITEXTURING_MODE NOMULTITEXTURE
+#endif
+
+#ifndef ALPHATEST_MODE
+#define ALPHATEST_MODE NOALPHATEST
+#endif
+
+#ifndef USEVERTEXCOLOR
+#define USEVERTEXCOLOR 0
+#endif
 
 varying vec2 texcoord0;
 varying vec2 texcoord1;
@@ -27,60 +34,42 @@ void main()
 {
 	vec4 result = vec4(0.0);
 	
-	if(!bool(use_multitexturing))
-	{
-		result = texture2D(tex0, texcoord0);
-	}
-	else
-	{
-		if(multitexture_mode == MODULATE)
-		{
-			result = texture2D(tex0, texcoord0) * texture2D(tex1, texcoord1);
-		}
-		else if(multitexture_mode == REPLACE)
-		{
-			result = texture2D(tex1, texcoord1);
-		}
-		else if(multitexture_mode == DECAL)
-		{
-			vec4 data0 = texture2D(tex0, texcoord0);
-			vec4 data1 = texture2D(tex1, texcoord1);
-			result = vec4(mix(data0.xyz, data1.xyz, data1.w), data0.w);
-		}
-		else //add
-		{
-			vec4 data0 = texture2D(tex0, texcoord0);
-			vec4 data1 = texture2D(tex1, texcoord1);
-			result = vec4(data0.xyz + data1.xyz, data0.w * data1.w);
-		}
-	}
+#if MULTITEXTURING_MODE == NOMULTITEXTURE
+	result = texture2D(tex0, texcoord0);
+#elif MULTITEXTURING_MODE == MULTITEXTURE_MODULATE
+	result = texture2D(tex0, texcoord0) * texture2D(tex1, texcoord1);
+#elif MULTITEXTURING_MODE == MULTITEXTURE_REPLACE
+	result = texture2D(tex1, texcoord1);
+#elif MULTITEXTURING_MODE == MULTITEXTURE_DECAL
+	vec4 data0 = texture2D(tex0, texcoord0);
+	vec4 data1 = texture2D(tex1, texcoord1);
+	result = vec4(mix(data0.xyz, data1.xyz, data1.w), data0.w);
+#elif MULTITEXTURING_MODE == MULTITEXTURE_ADD
+	vec4 data0 = texture2D(tex0, texcoord0);
+	vec4 data1 = texture2D(tex1, texcoord1);
+	result = vec4(data0.xyz + data1.xyz, data0.w * data1.w);
+#endif
 	
-	if(alphatest_mode == ALPHATEST_GREATER)
+#if ALPHATEST_MODE == ALPHATEST_GREATER
+	if(!(result.w > 0.0))
 	{
-		if(!(result.w > 0.0))
-		{
-			discard;
-		}
+		discard;
 	}
-	else if(alphatest_mode == ALPHATEST_LESS)
+#elif ALPHATEST_MODE == ALPHATEST_LESS
+	if(!(result.w < 0.5))
 	{
-		if(!(result.w < 0.5))
-		{
-			discard;
-		}
+		discard;
 	}
-	else if(alphatest_mode == ALPHATEST_GREATEREQUAL)
+#elif ALPHATEST_MODE == ALPHATEST_GREATEREQUAL
+	if(!(result.w >= 0.5))
 	{
-		if(!(result.w >= 0.5))
-		{
-			discard;
-		}
+		discard;
 	}
+#endif
 	
-	if(bool(use_vertex_color))
-	{
-		result *= color/255.0;
-	}
+#if USEVERTEXCOLOR == 1
+	result *= color/255.0;
+#endif
 	
 	gl_FragColor = result;
 }

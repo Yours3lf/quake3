@@ -185,6 +185,9 @@ static void R_DrawElements( int numIndexes, const glIndex_t *indexes ) {
 
 	if ( primitives == 2 ) {
 #endif
+		qglUseProgram(PROGRAMS[MULTITEXTURING_MODE][ALPHATEST_MODE][USE_VERTEXCOLOR]);
+		getMVP(UNIFORM_MVP);
+		qglUniformMatrix4fv(MVP_LOC, 1, 0, UNIFORM_MVP);
 		qglDrawElements( GL_TRIANGLES,
 						numIndexes,
 						GL_INDEX_TYPE,
@@ -274,7 +277,8 @@ static void DrawTris (shaderCommands_t *input) {
 	qglDepthRange( 0, 0 );
 
 	//qglDisableClientState (GL_COLOR_ARRAY);
-	qglUniform1i(USE_VERTEX_COLOR_LOC, 0);
+	//qglUniform1i(USE_VERTEX_COLOR_LOC, 0);
+	USE_VERTEXCOLOR = 0;
 	//qglDisableClientState (GL_TEXTURE_COORD_ARRAY);
 
 	//qglVertexPointer (3, GL_FLOAT, 16, input->xyz);	// padded for SIMD
@@ -335,6 +339,9 @@ static void DrawNormals (shaderCommands_t *input) {
 	//qglVertexPointer(3, GL_FLOAT, 0, verts);
 	qglEnableVertexAttribArray(0);
 	qglVertexAttribPointer(0, 3, GL_FLOAT, 0, 0, verts);
+	qglUseProgram(PROGRAMS[MULTITEXTURING_MODE][ALPHATEST_MODE][USE_VERTEXCOLOR]);
+	getMVP(UNIFORM_MVP);
+	qglUniformMatrix4fv(MVP_LOC, 1, 0, UNIFORM_MVP);
 	qglDrawElements( GL_LINES, i, GL_INDEX_TYPE, indicies );
 #else
 	qglBegin (GL_LINES);
@@ -762,7 +769,8 @@ static void ProjectDlightTexture_scalar( void ) {
 		qglVertexAttribPointer(1, 2, GL_FLOAT, 0, 0, texCoordsArray[0]);
 
 		//qglEnableClientState( GL_COLOR_ARRAY );
-		qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+		//qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+		USE_VERTEXCOLOR = 1;
 		//qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, colorArray );
 		qglEnableVertexAttribArray(3);
 		qglVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, 0, 0, colorArray);
@@ -806,7 +814,8 @@ static void RB_FogPass( void ) {
 	int			i;
 
 	//qglEnableClientState( GL_COLOR_ARRAY );
-	qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+	//qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+	USE_VERTEXCOLOR = 1;
 	//qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
 	qglEnableVertexAttribArray(3);
 	qglVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, 0, 0, tess.svars.colors);
@@ -1165,7 +1174,8 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 		if ( !setArraysOnce )
 		{
 			//qglEnableClientState( GL_COLOR_ARRAY );
-			qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+			//qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+			USE_VERTEXCOLOR = 1;
 			//qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, input->svars.colors );
 			qglEnableVertexAttribArray(3);
 			qglVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, 0, 0, input->svars.colors);
@@ -1176,12 +1186,13 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 		//
 		if ( pStage->bundle[1].image[0] != 0 )
 		{
-			qglUniform1i(USE_MULTITEXTURING_LOC, 1);
+			//qglUniform1i(USE_MULTITEXTURING_LOC, 1);
 			DrawMultitextured( input, stage );
 		}
 		else
 		{
-			qglUniform1i(USE_MULTITEXTURING_LOC, 0);
+			//qglUniform1i(USE_MULTITEXTURING_LOC, 0);
+			MULTITEXTURING_MODE = NOMULTITEXTURE;
 
 			if ( !setArraysOnce )
 			{
@@ -1269,7 +1280,8 @@ void RB_StageIteratorGeneric( void )
 	{
 		setArraysOnce = qfalse;
 		//qglDisableClientState (GL_COLOR_ARRAY);
-		qglUniform1i(USE_VERTEX_COLOR_LOC, 0);
+		//qglUniform1i(USE_VERTEX_COLOR_LOC, 0);
+		USE_VERTEXCOLOR = 0;
 		//qglDisableClientState (GL_TEXTURE_COORD_ARRAY);
 	}
 	else
@@ -1277,7 +1289,8 @@ void RB_StageIteratorGeneric( void )
 		setArraysOnce = qtrue;
 
 		//qglEnableClientState( GL_COLOR_ARRAY);
-		qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+		//qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+		USE_VERTEXCOLOR = 1;
 		//qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
 		qglEnableVertexAttribArray(3);
 		qglVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, 0, 0, tess.svars.colors);
@@ -1307,7 +1320,8 @@ void RB_StageIteratorGeneric( void )
 	{
 		//qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
 		//qglEnableClientState( GL_COLOR_ARRAY );
-		qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+		//qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+		USE_VERTEXCOLOR = 1;
 	}
 
 	//
@@ -1385,7 +1399,8 @@ void RB_StageIteratorVertexLitTexture( void )
 	// set arrays and lock
 	//
 	//qglEnableClientState( GL_COLOR_ARRAY);
-	qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+	//qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+	USE_VERTEXCOLOR = 1;
 	//qglEnableClientState( GL_TEXTURE_COORD_ARRAY);
 
 	//qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
@@ -1470,7 +1485,8 @@ void RB_StageIteratorLightmappedMultitexture( void ) {
 	qglShadeModel( GL_FLAT );
 #else
 	//qglEnableClientState( GL_COLOR_ARRAY );
-	qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+	//qglUniform1i(USE_VERTEX_COLOR_LOC, 1);
+	USE_VERTEXCOLOR = 1;
 	//qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.constantColor255 );
 	qglEnableVertexAttribArray(3);
 	qglVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, 0, 0, tess.constantColor255);
