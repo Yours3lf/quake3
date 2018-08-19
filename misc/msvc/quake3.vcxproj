@@ -81,6 +81,9 @@
     <IntDir>..\..\build\quake3_release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
+    <TargetName>ioquake3</TargetName>
+    <IncludePath>C:\dev\quake3\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\dev\quake3\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug TA|Win32'">
     <OutDir>..\..\build\quake3_debug_ta\</OutDir>
@@ -210,7 +213,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>user32.lib;advapi32.lib;winmm.lib;wsock32.lib;ws2_32.lib;khclient.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>user32.lib;advapi32.lib;winmm.lib;wsock32.lib;ws2_32.lib;libegl.lib;libglesv2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)ioquake3.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>c:\perforce_work\middleware\khronos\client\win32\khclient\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
