@@ -7,6 +7,18 @@
                    |                                       |
                    `---------- http://ioquake3.org --------'
 
+
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////
+///////////////// Modified the renderer so that it uses pure OpenGL ES 2.0 functionality 
+///////////////// including shaders. Rendering sould be identical to the old pipeline.
+///////////////// I get around 10 FPS on the RPI Zero with the open source driver.
+/////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 The intent of this project is to provide a baseline Quake 3 which may be used
 for further development. Some of the major features currently implemented are:
 
