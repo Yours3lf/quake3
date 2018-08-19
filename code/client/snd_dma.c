@@ -714,6 +714,10 @@ Include velocity in case I get around to doing doppler...
 void S_Base_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfxHandle ) {
 	sfx_t *sfx;
 
+#ifdef WIN32
+	return;
+#endif
+
 	if ( !s_soundStarted || s_soundMuted ) {
 		return;
 	}
@@ -776,6 +780,10 @@ Include velocity in case I get around to doing doppler...
 */
 void S_Base_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfxHandle ) {
 	sfx_t *sfx;
+
+#ifdef WIN32
+	return 0;
+#endif
 
 	if ( !s_soundStarted || s_soundMuted ) {
 		return;
@@ -1362,6 +1370,10 @@ void S_UpdateBackgroundTrack( void ) {
 	int		fileBytes;
 	int		r;
 	static	float	musicVolume = 0.5f;
+
+#ifdef WIN32
+	return;
+#endif
 
 	if(!s_backgroundStream) {
 		return;
